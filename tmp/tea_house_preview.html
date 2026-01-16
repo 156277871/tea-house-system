@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🏪 连锁茶楼管理系统 - 界面预览</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Helvetica Neue", Helvetica, Arial, sans-serif;
+            background: #f5f6f7;
+            color: #333;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 5px;
+        }
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        .container {
+            display: flex;
+            max-width: 1400px;
+            margin: 20px auto;
+            gap: 20px;
+            padding: 0 20px;
+        }
+        .sidebar {
+            width: 250px;
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .main-content {
+            flex: 1;
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .menu-title {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #667eea;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+        .menu-item {
+            padding: 12px 15px;
+            margin: 5px 0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .menu-item:hover {
+            background: #f0f2f6;
+            transform: translateX(5px);
+        }
+        .menu-item.active {
+            background: #667eea;
+            color: white;
+        }
+        .metric-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+        }
+        .metric-value {
+            font-size: 32px;
+            font-weight: bold;
+            color: #667eea;
+            margin: 10px 0;
+        }
+        .metric-label {
+            font-size: 14px;
+            color: #666;
+        }
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .section {
+            margin-bottom: 30px;
+        }
+        .section h3 {
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: #333;
+            border-left: 4px solid #667eea;
+            padding-left: 12px;
+        }
+        .info-box {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 15px 20px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .info-box h4 {
+            color: #1976d2;
+            margin-bottom: 10px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        th {
+            background: #f5f5f5;
+            font-weight: 600;
+            color: #666;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .status-success {
+            background: #d4edda;
+            color: #155724;
+        }
+        .status-info {
+            background: #cce5ff;
+            color: #004085;
+        }
+        .feature-list {
+            list-style: none;
+            padding: 0;
+        }
+        .feature-list li {
+            padding: 10px 0;
+            border-bottom: 1px dashed #e0e0e0;
+        }
+        .feature-list li:before {
+            content: "✓";
+            color: #4caf50;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        .notice {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px 20px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+            .sidebar {
+                width: 100%;
+            }
+            .metrics-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🏪 连锁茶楼管理系统</h1>
+        <p>基于 Streamlit 的可视化管理平台 · 支持6家门店统一管理</p>
+    </div>
+
+    <div class="container">
+        <!-- 左侧菜单 -->
+        <div class="sidebar">
+            <div class="menu-title">功能导航</div>
+            <div class="menu-item active">
+                <span>📊</span> 控制台
+            </div>
+            <div class="menu-item">
+                <span>🏪</span> 门店管理
+            </div>
+            <div class="menu-item">
+                <span>👥</span> 员工管理
+            </div>
+            <div class="menu-item">
+                <span>💎</span> 会员管理
+            </div>
+            <div class="menu-item">
+                <span>🛍️</span> 商品管理
+            </div>
+            <div class="menu-item">
+                <span>📦</span> 库存管理
+            </div>
+            <div class="menu-item">
+                <span>📝</span> 订单管理
+            </div>
+            <div class="menu-item">
+                <span>💰</span> 财务报表
+            </div>
+        </div>
+
+        <!-- 主内容区 -->
+        <div class="main-content">
+            <h2>📊 控制台</h2>
+            <p style="color: #666; margin-bottom: 20px;">实时监控6家门店的运营数据</p>
+
+            <!-- 数据指标 -->
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-value">0</div>
+                    <div class="metric-label">今日订单数</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">¥0.00</div>
+                    <div class="metric-label">今日营业额</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">¥0.00</div>
+                    <div class="metric-label">净利润</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value">0</div>
+                    <div class="metric-label">活跃门店数</div>
+                </div>
+            </div>
+
+            <!-- 系统功能介绍 -->
+            <div class="section">
+                <h3>🎯 系统功能模块</h3>
+                <ul class="feature-list">
+                    <li><strong>门店管理</strong> - 创建、编辑、查看6家门店信息（名称、编码、地址、电话）</li>
+                    <li><strong>员工管理</strong> - 管理各门店员工信息，支持店长、店员等职位分类</li>
+                    <li><strong>会员管理</strong> - 会员信息维护、充值、消费记录查询</li>
+                    <li><strong>商品管理</strong> - 商品信息录入，支持茶叶、茶具等多分类管理</li>
+                    <li><strong>库存管理</strong> - 实时库存监控、入库操作、库存预警</li>
+                    <li><strong>订单管理</strong> - 创建订单、查看订单列表、订单状态跟踪</li>
+                    <li><strong>财务报表</strong> - 日报表、月报表、门店对比分析</li>
+                </ul>
+            </div>
+
+            <!-- 使用说明 -->
+            <div class="section">
+                <h3>🚀 快速开始</h3>
+                <div class="info-box">
+                    <h4>第一步：初始化数据</h4>
+                    <ol style="margin-left: 20px; line-height: 1.8;">
+                        <li>点击「🏪 门店管理」→ 新增门店（建议创建6家）</li>
+                        <li>点击「🛍️ 商品管理」→ 新增商品（龙井茶、普洱茶等）</li>
+                        <li>点击「📦 库存管理」→ 为门店添加库存</li>
+                    </ol>
+                </div>
+
+                <div class="info-box">
+                    <h4>第二步：开始营业</h4>
+                    <ol style="margin-left: 20px; line-height: 1.8;">
+                        <li>点击「📝 订单管理」→ 创建订单</li>
+                        <li>选择门店、会员（可选）、商品和数量</li>
+                        <li>确认支付，订单创建成功！</li>
+                    </ol>
+                </div>
+
+                <div class="info-box">
+                    <h4>第三步：查看报表</h4>
+                    <ol style="margin-left: 20px; line-height: 1.8;">
+                        <li>在「📊 控制台」查看今日营业概况</li>
+                        <li>在「💰 财务报表」查看详细数据分析</li>
+                        <li>支持按门店、日期筛选导出报表</li>
+                    </ol>
+                </div>
+            </div>
+
+            <!-- 推荐数据示例 -->
+            <div class="section">
+                <h3>📋 建议创建的示例数据</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>门店编码</th>
+                            <th>门店名称</th>
+                            <th>商品编码</th>
+                            <th>商品名称</th>
+                            <th>单价</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>ST001</td>
+                            <td>西湖茶楼</td>
+                            <td>P001</td>
+                            <td>龙井茶</td>
+                            <td>¥80/克</td>
+                        </tr>
+                        <tr>
+                            <td>ST002</td>
+                            <td>东湖茶楼</td>
+                            <td>P002</td>
+                            <td>普洱茶</td>
+                            <td>¥60/克</td>
+                        </tr>
+                        <tr>
+                            <td>ST003</td>
+                            <td>南湖茶楼</td>
+                            <td>P003</td>
+                            <td>铁观音</td>
+                            <td>¥70/克</td>
+                        </tr>
+                        <tr>
+                            <td>ST004</td>
+                            <td>北湖茶楼</td>
+                            <td>P004</td>
+                            <td>红茶</td>
+                            <td>¥50/克</td>
+                        </tr>
+                        <tr>
+                            <td>ST005</td>
+                            <td>中河茶楼</td>
+                            <td>P005</td>
+                            <td>绿茶</td>
+                            <td>¥65/克</td>
+                        </tr>
+                        <tr>
+                            <td>ST006</td>
+                            <td>钱塘茶楼</td>
+                            <td>P006</td>
+                            <td>白茶</td>
+                            <td>¥90/克</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 重要提示 -->
+            <div class="notice">
+                <h4>⚠️ 系统运行状态</h4>
+                <p><strong>当前状态：</strong><span class="status-badge status-success">运行中</span></p>
+                <p><strong>访问地址：</strong>http://9.128.104.192:8501 （需要开放8501端口）</p>
+                <p><strong>技术栈：</strong>Python + Streamlit + SQLAlchemy + PostgreSQL</p>
+                <p style="margin-top: 10px;"><em>💡 这是静态预览页面，实际交互需要在真实的Streamlit应用中进行操作。</em></p>
+            </div>
+
+        </div>
+    </div>
+
+    <div style="text-align: center; padding: 20px; color: #999; font-size: 14px;">
+        <p>连锁茶楼管理系统 © 2024 | 基于 Streamlit 构建</p>
+    </div>
+</body>
+</html>
