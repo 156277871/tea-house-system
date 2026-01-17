@@ -176,11 +176,6 @@ st.markdown("""
     box-shadow: none !important;
 }
 
-/* 隐藏radio圆点 */
-[data-testid="stSidebar"] [role="radiogroup"] label div:first-child {
-    display: none !important;
-}
-
 /* 保持文字颜色一致 */
 [data-testid="stSidebar"] [role="radiogroup"] label p {
     color: inherit !important;
