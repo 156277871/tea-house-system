@@ -504,18 +504,41 @@ elif page == "🎯 经营":
                         with tab2:
                             session_items = db.query(SessionItem).filter(SessionItem.session_id == session.id).all()
                             if session_items:
-                                item_data = []
+                                st.subheader("📋 已点商品明细")
                                 for item in session_items:
                                     product = db.query(Product).get(item.product_id)
-                                    item_data.append({
-                                        "商品": product.name,
-                                        "数量": item.quantity,
-                                        "单价": f"¥{item.unit_price:.2f}",
-                                        "小计": f"¥{item.subtotal:.2f}",
-                                        "时间": item.order_time.strftime("%H:%M")
-                                    })
-                                df = pd.DataFrame(item_data)
-                                st.dataframe(df, use_container_width=True)
+                                    with st.container():
+                                        col1, col2, col3, col4, col5 = st.columns([3, 2, 2, 2, 1])
+                                        with col1:
+                                            st.text(f"🛍️ {product.name}")
+                                        with col2:
+                                            st.text(f"数量: {item.quantity}")
+                                        with col3:
+                                            st.text(f"单价: ¥{item.unit_price:.2f}")
+                                        with col4:
+                                            st.text(f"小计: ¥{item.subtotal:.2f}")
+                                        with col5:
+                                            if st.button("取消", key=f"cancel_{item.id}", type="secondary"):
+                                                # 删除点单
+                                                # 恢复库存
+                                                inv = db.query(Inventory).filter(
+                                                    Inventory.store_id == session.store_id,
+                                                    Inventory.product_id = item.product_id
+                                                ).first()
+                                                if inv:
+                                                    inv.quantity += item.quantity
+
+                                                # 扣减会话总金额
+                                                session.total_amount -= item.subtotal
+
+                                                # 删除点单记录
+                                                db.delete(item)
+                                                db.commit()
+                                                st.success(f"✅ 已取消 {product.name}")
+                                                st.rerun()
+
+                                        st.caption(f"下单时间: {item.order_time.strftime('%Y-%m-%d %H:%M:%S')}")
+                                        st.divider()
                             else:
                                 st.info("暂未点单")
                         
