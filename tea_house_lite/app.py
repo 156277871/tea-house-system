@@ -467,12 +467,17 @@ elif page == "🎯 经营":
                                     
                                     if st.form_submit_button("📝 点单", type="primary"):
                                         product = db.query(Product).get(product_id[0])
+                                        if not product:
+                                            st.error("商品不存在，请刷新页面重试")
+                                            db.rollback()
+                                            st.rerun()
+                                        
                                         subtotal = product.unit_price * quantity
                                         
                                         # 创建会话点单
                                         session_item = SessionItem(
                                             session_id=session.id,
-                                            product_id=product_id[0],
+                                            product_id=product.id,
                                             quantity=quantity,
                                             unit_price=product.unit_price,
                                             subtotal=subtotal
@@ -485,7 +490,7 @@ elif page == "🎯 经营":
                                         # 扣减库存
                                         inv = db.query(Inventory).filter(
                                             Inventory.store_id == session.store_id,
-                                            Inventory.product_id == product_id[0]
+                                            Inventory.product_id == product.id
                                         ).first()
                                         
                                         if inv:
