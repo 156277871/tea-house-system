@@ -523,7 +523,7 @@ elif page == "🎯 经营":
                                                 # 恢复库存
                                                 inv = db.query(Inventory).filter(
                                                     Inventory.store_id == session.store_id,
-                                                    Inventory.product_id = item.product_id
+                                                    Inventory.product_id == item.product_id
                                                 ).first()
                                                 if inv:
                                                     inv.quantity += item.quantity
