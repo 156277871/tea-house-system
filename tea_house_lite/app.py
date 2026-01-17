@@ -164,26 +164,53 @@ def init_database():
 init_database()
 
 # Streamlit配置
-st.set_page_config(page_title="连锁茶楼管理系统", page_icon="🏪", layout="wide")
+st.set_page_config(page_title="连锁茶楼管理系统", page_icon="🏪", layout="wide", initial_sidebar_state="expanded")
 
-# 自定义CSS：隐藏侧边栏导航的选中样式
+# 自定义CSS：亮色主题 + 导航栏样式
 st.markdown("""
 <style>
-/* 隐藏侧边栏所有选中样式 */
+/* 亮色主题 - 主背景 */
+.main .block-container {
+    background-color: #ffffff !important;
+    color: #1f1f1f !important;
+}
+
+/* 亮色主题 - 侧边栏 */
+[data-testid="stSidebar"] {
+    background-color: #f8f9fa !important;
+    color: #1f1f1f !important;
+}
+
+/* 亮色主题 - 标题 */
+h1, h2, h3, h4, h5, h6 {
+    color: #1f1f1f !important;
+}
+
+/* 侧边栏导航样式 - 确保正常显示 */
 [data-testid="stSidebar"] [role="radiogroup"] label {
     background-color: transparent !important;
     border: none !important;
     box-shadow: none !important;
+    padding: 8px 12px;
+    margin: 4px 0;
 }
 
-/* 保持文字颜色一致 */
+/* 侧边栏导航文字颜色 */
 [data-testid="stSidebar"] [role="radiogroup"] label p {
-    color: inherit !important;
+    color: #1f1f1f !important;
+    font-size: 16px;
 }
 
-/* 移除选中后的高亮边框 */
+/* 鼠标悬停效果 */
 [data-testid="stSidebar"] [role="radiogroup"] label:hover {
-    background-color: rgba(255,255,255,0.05) !important;
+    background-color: rgba(0,0,0,0.05) !important;
+    border-radius: 4px;
+}
+
+/* 选中状态 - 轻微高亮 */
+[data-testid="stSidebar"] [role="radiogroup"] label[data-selected="true"] p {
+    color: #0066cc !important;
+    font-weight: 600;
 }
 </style>
 """, unsafe_allow_html=True)
