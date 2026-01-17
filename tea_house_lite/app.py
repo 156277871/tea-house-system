@@ -169,20 +169,26 @@ st.set_page_config(page_title="连锁茶楼管理系统", page_icon="🏪", layo
 # 自定义CSS：隐藏侧边栏导航的选中样式
 st.markdown("""
 <style>
-/* 隐藏侧边栏radio的选中背景色 */
-div[data-testid="stSidebar"] > div:nth-child(2) > div > div > div[data-testid="stVerticalBlock"] > div > div > div > div > div > label {
+/* 隐藏侧边栏所有选中样式 */
+[data-testid="stSidebar"] [role="radiogroup"] label {
     background-color: transparent !important;
     border: none !important;
-}
-
-/* 隐藏侧边栏radio选中时的指示器 */
-div[data-testid="stSidebar"] > div:nth-child(2) > div > div > div[data-testid="stVerticalBlock"] > div > div > div > div > div > label > div[data-testid="stMarkdownContainer"] > p {
-    color: inherit !important;
+    box-shadow: none !important;
 }
 
 /* 隐藏radio圆点 */
-div[data-testid="stSidebar"] > div:nth-child(2) > div > div > div[data-testid="stVerticalBlock"] > div > div > div > div > div > label > div:first-child {
+[data-testid="stSidebar"] [role="radiogroup"] label div:first-child {
     display: none !important;
+}
+
+/* 保持文字颜色一致 */
+[data-testid="stSidebar"] [role="radiogroup"] label p {
+    color: inherit !important;
+}
+
+/* 移除选中后的高亮边框 */
+[data-testid="stSidebar"] [role="radiogroup"] label:hover {
+    background-color: rgba(255,255,255,0.05) !important;
 }
 </style>
 """, unsafe_allow_html=True)
