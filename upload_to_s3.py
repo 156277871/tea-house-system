@@ -10,18 +10,18 @@ storage = S3SyncStorage(
     region="cn-beijing",
 )
 
-# 上传 V2.0 完整包
-print("正在上传茶楼管理系统 V2.0...")
-with open("tea_house_lite/tea-house-v2-complete.tar.gz", "rb") as f:
+# 上传修复版本
+print("正在上传茶楼管理系统 V2.0 修复版...")
+with open("tea_house_lite/tea-house-v2-fixed.tar.gz", "rb") as f:
     key = storage.stream_upload_file(
         fileobj=f,
-        file_name="tea-house-v2-complete.tar.gz",
+        file_name="tea-house-v2-fixed.tar.gz",
         content_type="application/gzip",
     )
 url = storage.generate_presigned_url(key=key, expire_time=604800)
-print(f"✅ V2.0 上传成功")
+print(f"✅ 修复版上传成功")
 print(f"下载链接: {url}")
 print()
 print("=" * 60)
-print("V2.0 上传成功！包含开台、点单、结账功能")
+print("V2.0 修复版已上传！修复了数据库兼容性问题")
 print("=" * 60)

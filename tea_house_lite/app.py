@@ -1,11 +1,12 @@
 import streamlit as st
 import pandas as pd
 from datetime import datetime, date, timedelta
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, inspect
 from sqlalchemy.orm import sessionmaker, declarative_base
 from sqlalchemy import Column, Integer, String, Float, DateTime, ForeignKey, Text, Enum as SQLEnum
 from sqlalchemy.exc import IntegrityError
 import enum
+import os
 
 # 数据库配置
 DATABASE_URL = "sqlite:///tea_house.db"
@@ -152,6 +153,15 @@ Base.metadata.create_all(bind=engine)
 
 def get_db():
     return SessionLocal()
+
+# 数据库初始化和升级
+def init_database():
+    """初始化和升级数据库"""
+    # 创建所有表（如果不存在）
+    Base.metadata.create_all(bind=engine)
+
+# 初始化数据库
+init_database()
 
 # Streamlit配置
 st.set_page_config(page_title="连锁茶楼管理系统", page_icon="🏪", layout="wide")
