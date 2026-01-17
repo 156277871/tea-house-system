@@ -466,13 +466,13 @@ elif page == "🎯 经营":
                                     quantity = st.number_input("数量", min_value=1, value=1)
                                     
                                     if st.form_submit_button("📝 点单", type="primary"):
-                                        product = db.query(Product).get(product_id)
+                                        product = db.query(Product).get(product_id[0])
                                         subtotal = product.unit_price * quantity
                                         
                                         # 创建会话点单
                                         session_item = SessionItem(
                                             session_id=session.id,
-                                            product_id=product_id,
+                                            product_id=product_id[0],
                                             quantity=quantity,
                                             unit_price=product.unit_price,
                                             subtotal=subtotal
@@ -485,7 +485,7 @@ elif page == "🎯 经营":
                                         # 扣减库存
                                         inv = db.query(Inventory).filter(
                                             Inventory.store_id == session.store_id,
-                                            Inventory.product_id == product_id
+                                            Inventory.product_id == product_id[0]
                                         ).first()
                                         
                                         if inv:
@@ -892,7 +892,7 @@ elif page == "💰 财务报表":
             
             if sessions:
                 total_sessions = len(sessions)
-                completed_sessions = len([s for s in sessions if s.status == SessionStatus.PAID])
+                completed_sessions = len([s for s in sessions if s.status == SessionStatus.COMPLETED])
                 avg_duration = sum(s.duration_minutes for s in sessions if s.duration_minutes) / completed_sessions if completed_sessions > 0 else 0
                 
                 col1, col2, col3 = st.columns(3)
