@@ -166,6 +166,27 @@ init_database()
 # Streamlit配置
 st.set_page_config(page_title="连锁茶楼管理系统", page_icon="🏪", layout="wide")
 
+# 自定义CSS：隐藏侧边栏导航的选中样式
+st.markdown("""
+<style>
+/* 隐藏侧边栏radio的选中背景色 */
+div[data-testid="stSidebar"] > div:nth-child(2) > div > div > div[data-testid="stVerticalBlock"] > div > div > div > div > div > label {
+    background-color: transparent !important;
+    border: none !important;
+}
+
+/* 隐藏侧边栏radio选中时的指示器 */
+div[data-testid="stSidebar"] > div:nth-child(2) > div > div > div[data-testid="stVerticalBlock"] > div > div > div > div > div > label > div[data-testid="stMarkdownContainer"] > p {
+    color: inherit !important;
+}
+
+/* 隐藏radio圆点 */
+div[data-testid="stSidebar"] > div:nth-child(2) > div > div > div[data-testid="stVerticalBlock"] > div > div > div > div > div > label > div:first-child {
+    display: none !important;
+}
+</style>
+""", unsafe_allow_html=True)
+
 st.sidebar.title("🏪 连锁茶楼管理系统")
 
 page = st.sidebar.radio(
