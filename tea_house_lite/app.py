@@ -544,9 +544,9 @@ elif page == "🎯 经营":
                         
                         # 结账
                         with tab3:
-                            st.warning(f"💰 总消费: ¥{session.total_amount:.2f}")
-                            
                             session_items = db.query(SessionItem).filter(SessionItem.session_id == session.id).all()
+
+                            # 显示消费明细
                             if session_items:
                                 st.subheader("📋 消费明细")
                                 item_data = []
@@ -559,49 +559,93 @@ elif page == "🎯 经营":
                                     })
                                 df = pd.DataFrame(item_data)
                                 st.dataframe(df, use_container_width=True)
-                            
-                            payment_method = st.selectbox(
-                                "支付方式",
-                                [PaymentMethod.WECHAT, PaymentMethod.ALIPAY, PaymentMethod.CASH],
-                                format_func=lambda x: {"wechat": "微信", "alipay": "支付宝", "cash": "现金"}[x.value]
-                            )
-                            
-                            if st.button("💰 确认结账", type="primary"):
-                                # 停止计时
-                                session.end_time = datetime.utcnow()
-                                session.duration_minutes = duration
-                                session.status = SessionStatus.PAID
-                                
-                                # 更新桌台状态
-                                table.status = TableStatus.FREE
-                                
-                                # 创建订单
-                                order = Order(
-                                    order_no=f"ORD{datetime.now().strftime('%Y%m%d%H%M%S')}",
-                                    store_id=session.store_id,
-                                    member_id=session.member_id,
-                                    total_amount=session.total_amount,
-                                    payment_method=payment_method
+                            else:
+                                st.info("暂未点单")
+
+                            # 显示应付金额
+                            st.divider()
+                            st.warning(f"💰 应付金额: ¥{session.total_amount:.2f}")
+
+                            # 如果没有开始结账流程
+                            if 'checkout_table_id' not in st.session_state or st.session_state['checkout_table_id'] != table.id:
+                                if st.button("💰 开始结账", type="primary", key="start_checkout"):
+                                    st.session_state['checkout_table_id'] = table.id
+                                    st.rerun()
+                            else:
+                                # 结账确认流程
+                                st.subheader("💳 结账确认")
+
+                                # 选择支付方式
+                                payment_method = st.selectbox(
+                                    "支付方式",
+                                    [PaymentMethod.WECHAT, PaymentMethod.ALIPAY, PaymentMethod.CASH],
+                                    format_func=lambda x: {"wechat": "微信", "alipay": "支付宝", "cash": "现金"}[x.value],
+                                    key="payment_method"
                                 )
-                                db.add(order)
-                                db.flush()
-                                
-                                # 创建订单明细
-                                for item in session_items:
-                                    order_item = OrderItem(
-                                        order_id=order.id,
-                                        product_id=item.product_id,
-                                        quantity=item.quantity,
-                                        unit_price=item.unit_price,
-                                        subtotal=item.subtotal
-                                    )
-                                    db.add(order_item)
-                                
-                                db.commit()
-                                st.success(f"✅ 结账成功！订单号: {order.order_no}")
-                                st.session_state.pop('selected_table_id', None)
-                                st.session_state.pop('selected_table_name', None)
-                                st.rerun()
+
+                                # 输入实收金额
+                                received_amount = st.number_input(
+                                    "实收金额",
+                                    min_value=0.0,
+                                    step=0.01,
+                                    value=float(session.total_amount),
+                                    format="%.2f",
+                                    key="received_amount"
+                                )
+
+                                # 显示校验结果
+                                if abs(received_amount - session.total_amount) < 0.01:
+                                    st.success("✅ 金额核对正确")
+                                    confirm_enabled = True
+                                else:
+                                    st.error(f"❌ 金额不符，应付 ¥{session.total_amount:.2f}，实收 ¥{received_amount:.2f}")
+                                    confirm_enabled = False
+
+                                # 取消和确认按钮
+                                col1, col2 = st.columns(2)
+                                with col1:
+                                    if st.button("❌ 取消", key="cancel_checkout"):
+                                        st.session_state.pop('checkout_table_id', None)
+                                        st.rerun()
+                                with col2:
+                                    if st.button("✅ 确认结账", key="confirm_checkout", disabled=not confirm_enabled, type="primary"):
+                                        # 停止计时
+                                        session.end_time = datetime.utcnow()
+                                        session.duration_minutes = duration
+                                        session.status = SessionStatus.COMPLETED
+
+                                        # 更新桌台状态为空闲
+                                        table.status = TableStatus.FREE
+
+                                        # 创建订单
+                                        order = Order(
+                                            order_no=f"ORD{datetime.now().strftime('%Y%m%d%H%M%S')}",
+                                            store_id=session.store_id,
+                                            member_id=session.member_id,
+                                            total_amount=session.total_amount,
+                                            payment_method=payment_method,
+                                            status=OrderStatus.COMPLETED
+                                        )
+                                        db.add(order)
+                                        db.flush()
+
+                                        # 创建订单明细
+                                        for item in session_items:
+                                            order_item = OrderItem(
+                                                order_id=order.id,
+                                                product_id=item.product_id,
+                                                quantity=item.quantity,
+                                                unit_price=item.unit_price,
+                                                subtotal=item.subtotal
+                                            )
+                                            db.add(order_item)
+
+                                        db.commit()
+                                        st.success(f"✅ 结账成功！订单号: {order.order_no}")
+                                        st.session_state.pop('selected_table_id', None)
+                                        st.session_state.pop('selected_table_name', None)
+                                        st.session_state.pop('checkout_table_id', None)
+                                        st.rerun()
                     
                     # 关闭选中状态
                     if st.button("✖️ 关闭"):
