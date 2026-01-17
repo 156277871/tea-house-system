@@ -166,52 +166,9 @@ init_database()
 # Streamlit配置
 st.set_page_config(page_title="连锁茶楼管理系统", page_icon="🏪", layout="wide")
 
-# 自定义CSS样式
-st.markdown("""
-<style>
-div[data-testid="stRadio"] > div > label > div[data-testid="stMarkdownContainer"] > p {
-    font-size: 16px;
-    font-weight: 500;
-}
-
-div[data-testid="stRadio"] > div {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    gap: 10px;
-}
-
-div[data-testid="stRadio"] > div > label {
-    flex: 1;
-    min-width: 120px;
-    border: 2px solid #e0e0e0;
-    border-radius: 8px;
-    padding: 10px;
-    margin: 0;
-    background-color: white;
-    transition: all 0.2s;
-}
-
-div[data-testid="stRadio"] > div > label:hover {
-    border-color: #1f77b4;
-    background-color: #f0f7ff;
-}
-
-div[data-testid="stRadio"] > div > label[data-selected="true"] {
-    border-color: #1f77b4;
-    background-color: #1f77b4;
-    color: white;
-}
-
-div[data-testid="stRadio"] > div > label[data-selected="true"] p {
-    color: white;
-}
-</style>
-""", unsafe_allow_html=True)
-
 st.sidebar.title("🏪 连锁茶楼管理系统")
 
-page = st.radio(
+page = st.sidebar.radio(
     "选择功能",
     [
         "📊 控制台",
@@ -224,8 +181,7 @@ page = st.radio(
         "📝 订单管理",
         "💰 财务报表"
     ],
-    label_visibility="collapsed",
-    horizontal=True
+    label_visibility="collapsed"
 )
 
 # 辅助函数
