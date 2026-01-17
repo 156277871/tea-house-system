@@ -10,7 +10,7 @@ import os
 
 # 数据库配置
 DATABASE_URL = "sqlite:///tea_house.db"
-engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
+engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False}, echo=False)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
@@ -472,14 +472,18 @@ elif page == "🎯 经营":
                                             db.rollback()
                                             st.rerun()
                                         
-                                        subtotal = product.unit_price * quantity
+                                        # 先保存商品信息，避免session问题
+                                        product_name = product.name
+                                        product_id_val = product.id
+                                        unit_price = product.unit_price
+                                        subtotal = unit_price * quantity
                                         
                                         # 创建会话点单
                                         session_item = SessionItem(
                                             session_id=session.id,
-                                            product_id=product.id,
+                                            product_id=product_id_val,
                                             quantity=quantity,
-                                            unit_price=product.unit_price,
+                                            unit_price=unit_price,
                                             subtotal=subtotal
                                         )
                                         db.add(session_item)
@@ -490,19 +494,29 @@ elif page == "🎯 经营":
                                         # 扣减库存
                                         inv = db.query(Inventory).filter(
                                             Inventory.store_id == session.store_id,
-                                            Inventory.product_id == product.id
+                                            Inventory.product_id == product_id_val
                                         ).first()
+                                        
+                                        current_stock = inv.quantity if inv else 0
                                         
                                         if inv:
                                             if inv.quantity >= quantity:
                                                 inv.quantity -= quantity
-                                                st.success(f"✅ 点单成功！{product.name} x{quantity}，库存已扣减")
+                                                message = f"✅ 点单成功！{product_name} x{quantity}，库存已扣减"
+                                                message_type = "success"
                                             else:
-                                                st.warning(f"⚠️ 点单成功！但库存不足（当前库存: {inv.quantity}）")
+                                                message = f"⚠️ 点单成功！但库存不足（当前库存: {inv.quantity}）"
+                                                message_type = "warning"
                                         else:
-                                            st.warning(f"⚠️ 点单成功！但该商品暂无库存记录")
+                                            message = f"⚠️ 点单成功！但该商品暂无库存记录"
+                                            message_type = "warning"
                                         
                                         db.commit()
+                                        
+                                        if message_type == "success":
+                                            st.success(message)
+                                        else:
+                                            st.warning(message)
                                         st.rerun()
                         
                         # 消费明细
@@ -512,10 +526,14 @@ elif page == "🎯 经营":
                                 st.subheader("📋 已点商品明细")
                                 for item in session_items:
                                     product = db.query(Product).get(item.product_id)
+                                    if not product:
+                                        continue
+                                    
+                                    product_name = product.name
                                     with st.container():
                                         col1, col2, col3, col4, col5 = st.columns([3, 2, 2, 2, 1])
                                         with col1:
-                                            st.text(f"🛍️ {product.name}")
+                                            st.text(f"🛍️ {product_name}")
                                         with col2:
                                             st.text(f"数量: {item.quantity}")
                                         with col3:
@@ -525,21 +543,26 @@ elif page == "🎯 经营":
                                         with col5:
                                             if st.button("取消", key=f"cancel_{item.id}", type="secondary"):
                                                 # 删除点单
+                                                # 先保存需要的信息
+                                                item_subtotal = item.subtotal
+                                                item_quantity = item.quantity
+                                                item_product_id = item.product_id
+                                                
                                                 # 恢复库存
                                                 inv = db.query(Inventory).filter(
                                                     Inventory.store_id == session.store_id,
-                                                    Inventory.product_id == item.product_id
+                                                    Inventory.product_id == item_product_id
                                                 ).first()
                                                 if inv:
-                                                    inv.quantity += item.quantity
+                                                    inv.quantity += item_quantity
 
                                                 # 扣减会话总金额
-                                                session.total_amount -= item.subtotal
+                                                session.total_amount -= item_subtotal
 
                                                 # 删除点单记录
                                                 db.delete(item)
                                                 db.commit()
-                                                st.success(f"✅ 已取消 {product.name}")
+                                                st.success(f"✅ 已取消 {product_name}")
                                                 st.rerun()
 
                                         st.caption(f"下单时间: {item.order_time.strftime('%Y-%m-%d %H:%M:%S')}")
