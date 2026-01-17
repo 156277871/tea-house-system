@@ -166,7 +166,7 @@ init_database()
 # Streamlit配置
 st.set_page_config(page_title="连锁茶楼管理系统", page_icon="🏪", layout="wide", initial_sidebar_state="expanded")
 
-# 自定义CSS：亮色主题
+# 自定义CSS：亮色主题 + 导航栏样式
 st.markdown("""
 <style>
 /* 亮色主题 - 主背景 */
@@ -184,6 +184,26 @@ st.markdown("""
 /* 亮色主题 - 标题 */
 h1, h2, h3, h4, h5, h6 {
     color: #1f1f1f !important;
+}
+
+/* 导航栏 - 去掉默认选中样式 */
+[data-testid="stSidebar"] [role="radiogroup"] label {
+    background-color: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+/* 导航栏 - 当前页面深灰色 */
+[data-testid="stSidebar"] [role="radiogroup"] label[data-selected="true"] {
+    background-color: #6c757d !important;
+    color: #ffffff !important;
+    border-radius: 4px;
+    padding: 8px 12px;
+}
+
+/* 导航栏 - 当前页面文字颜色 */
+[data-testid="stSidebar"] [role="radiogroup"] label[data-selected="true"] p {
+    color: #ffffff !important;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -344,33 +364,39 @@ elif page == "🎯 经营":
                 # 显示桌台列表
                 st.subheader("🪑 桌台列表")
                 
-                # 按状态分组显示
+                # 按状态分组显示（不折叠）
                 for status in [TableStatus.FREE, TableStatus.OCCUPIED, TableStatus.RESERVED, TableStatus.CLEANING]:
                     status_tables = [t for t in tables if t.status == status]
                     if status_tables:
-                        with st.expander(f"{get_status_color(status)} {get_status_text(status)} ({len(status_tables)}个)", expanded=(status == TableStatus.FREE)):
-                            cols = st.columns(4)
-                            for idx, table in enumerate(status_tables):
-                                col = cols[idx % 4]
-                                with col:
-                                    # 获取该桌台的会话信息
-                                    session = db.query(Session).filter(
-                                        Session.table_id == table.id,
-                                        Session.status == SessionStatus.IN_PROGRESS
-                                    ).first()
-                                    
-                                    # 桌台卡片
-                                    if session:
-                                        duration = calculate_duration(session.start_time)
-                                        member = db.query(Member).get(session.member_id) if session.member_id else None
-                                        button_text = f"**{table.name}**\n\n{get_status_color(status)} {format_duration(duration)}\n💰 ¥{session.total_amount:.2f}"
-                                    else:
-                                        button_text = f"**{table.name}**\n\n{get_status_color(status)} {get_status_text(status)}\n👥 {table.capacity}人"
-                                    
-                                    if st.button(button_text, key=f"table_{table.id}", use_container_width=True, type="primary" if status == TableStatus.FREE else "secondary"):
-                                        st.session_state['selected_table_id'] = table.id
-                                        st.session_state['selected_table_name'] = table.name
-                                        st.rerun()
+                        # 状态标题
+                        st.markdown(f"### {get_status_color(status)} {get_status_text(status)} ({len(status_tables)}个)")
+                        
+                        # 桌台卡片网格
+                        cols = st.columns(4)
+                        for idx, table in enumerate(status_tables):
+                            col = cols[idx % 4]
+                            with col:
+                                # 获取该桌台的会话信息
+                                session = db.query(Session).filter(
+                                    Session.table_id == table.id,
+                                    Session.status == SessionStatus.IN_PROGRESS
+                                ).first()
+                                
+                                # 桌台卡片
+                                if session:
+                                    duration = calculate_duration(session.start_time)
+                                    member = db.query(Member).get(session.member_id) if session.member_id else None
+                                    button_text = f"**{table.name}**\n\n{get_status_color(status)} {format_duration(duration)}\n💰 ¥{session.total_amount:.2f}"
+                                else:
+                                    button_text = f"**{table.name}**\n\n{get_status_color(status)} {get_status_text(status)}\n👥 {table.capacity}人"
+                                
+                                if st.button(button_text, key=f"table_{table.id}", use_container_width=True, type="primary" if status == TableStatus.FREE else "secondary"):
+                                    st.session_state['selected_table_id'] = table.id
+                                    st.session_state['selected_table_name'] = table.name
+                                    st.rerun()
+                        
+                        # 状态之间添加分隔线
+                        st.divider()
                 
                 # 显示选中桌台的详情和操作面板
                 if 'selected_table_id' in st.session_state:
