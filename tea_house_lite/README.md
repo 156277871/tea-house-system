@@ -50,11 +50,29 @@ streamlit run app.py
 
 启动成功后，在浏览器中访问：**http://localhost:8501**
 
-### 部署到 Hugging Face Spaces
+## 🌐 部署到云端
+
+### Streamlit Cloud 部署
+
+1. 将代码推送到 GitHub 仓库
+2. 访问 [Streamlit Community Cloud](https://share.streamlit.io/)
+3. 点击 "New app"
+4. 选择你的 GitHub 仓库
+5. 选择 `tea_house_lite` 目录
+6. 点击 "Deploy"
+7. 等待自动部署完成（约2-3分钟）
+
+**重要提示**：
+- Streamlit Cloud 使用免费层，有内存和运行时间限制
+- 数据库文件会在每次重启后重置（这是 Streamlit Cloud 的限制）
+- 如需数据持久化，请考虑使用外部数据库服务
+
+### Hugging Face Spaces 部署
+
 1. 注册 Hugging Face 账号：https://huggingface.co/join
 2. 创建新的 Space：https://huggingface.co/new-space
 3. 选择 SDK：Streamlit
-4. 上传所有文件（app.py, requirements.txt, README.md）
+4. 上传 `tea_house_lite` 目录下的所有文件
 5. 等待自动部署完成（约2-3分钟）
 
 ## 📝 使用顺序
@@ -81,7 +99,40 @@ streamlit run app.py
 
 ## 🔧 故障排除
 
-### 问题：应用启动失败或显示 "Error running app"
+### Streamlit Cloud 上的问题
+
+#### 问题：显示 "Error running app!"
+
+**可能原因**：
+1. 依赖包版本不兼容
+2. 数据库初始化失败
+3. 代码运行时错误
+
+**解决方案**：
+1. 检查部署日志，查看具体错误信息
+2. 确保所有依赖包都在 `requirements.txt` 中列出
+3. 本地测试应用是否正常运行：`streamlit run app.py`
+4. 如果数据库相关错误，检查是否有文件写入权限
+
+#### 问题：数据库数据丢失
+
+**原因**：Streamlit Cloud 免费版每次重启都会重置文件系统
+
+**解决方案**：
+- 定期导出数据备份
+- 考虑升级到付费版或使用外部数据库（如 PostgreSQL）
+- 本地部署以保持数据持久化
+
+#### 问题：应用启动缓慢
+
+**解决方案**：
+1. 减少首页加载的数据量
+2. 优化数据库查询
+3. 使用缓存减少重复计算
+
+### 本地运行问题
+
+#### 问题：应用启动失败或显示 "Error running app"
 
 **解决方案 1：清理旧进程**
 - Windows：在任务管理器中结束所有 `streamlit.exe` 和 `python.exe` 进程
