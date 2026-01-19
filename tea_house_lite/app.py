@@ -191,6 +191,7 @@ h1, h2, h3, h4, h5, h6 {
     background-color: transparent !important;
     border: none !important;
     box-shadow: none !important;
+    padding: 8px 12px;
 }
 
 /* 导航栏 - 当前页面深灰色 */
@@ -198,7 +199,7 @@ h1, h2, h3, h4, h5, h6 {
     background-color: #6c757d !important;
     color: #ffffff !important;
     border-radius: 4px;
-    padding: 8px 12px;
+    margin: 4px 0;
 }
 
 /* 导航栏 - 当前页面文字颜色 */
@@ -386,9 +387,9 @@ elif page == "🎯 经营":
                                 if session:
                                     duration = calculate_duration(session.start_time)
                                     member = db.query(Member).get(session.member_id) if session.member_id else None
-                                    button_text = f"**{table.name}**\n\n{get_status_color(status)} {format_duration(duration)}\n💰 ¥{session.total_amount:.2f}"
+                                    button_text = f"{table.name}\n{get_status_color(status)} {format_duration(duration)}\n💰 ¥{session.total_amount:.2f}"
                                 else:
-                                    button_text = f"**{table.name}**\n\n{get_status_color(status)} {get_status_text(status)}\n👥 {table.capacity}人"
+                                    button_text = f"{table.name}\n{get_status_color(status)} {get_status_text(status)}\n👥 {table.capacity}人"
                                 
                                 if st.button(button_text, key=f"table_{table.id}", use_container_width=True, type="primary" if status == TableStatus.FREE else "secondary"):
                                     st.session_state['selected_table_id'] = table.id
