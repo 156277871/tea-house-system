@@ -226,11 +226,8 @@ page = st.sidebar.radio(
     [
         "📊 控制台",
         "🎯 经营",
-        "🏪 门店管理",
-        "👥 员工管理",
+        "⚙️ 设置",
         "💎 会员管理",
-        "🛍️ 商品管理",
-        "📦 库存管理",
         "📝 订单管理",
         "💰 财务报表"
     ],
@@ -685,7 +682,7 @@ elif page == "🎯 经营":
                                         st.session_state.pop('selected_table_name', None)
                                         st.session_state.pop('checkout_table_id', None)
                                         st.rerun()
-                    
+
                     # 关闭选中状态
                     if st.button("✖️ 关闭"):
                         st.session_state.pop('selected_table_id', None)
@@ -694,76 +691,229 @@ elif page == "🎯 经营":
     finally:
         db.close()
 
-# 门店管理
-elif page == "🏪 门店管理":
-    st.header("🏪 门店管理")
-    tab1, tab2 = st.tabs(["门店列表", "新增门店"])
+# 设置页面
+elif page == "⚙️ 设置":
+    st.header("⚙️ 系统设置")
+    
+    tab1, tab2, tab3, tab4, tab5 = st.tabs([
+        "🏪 门店管理",
+        "🪑 桌台管理",
+        "👥 员工管理",
+        "🛍️ 商品管理",
+        "📦 库存管理"
+    ])
+    
     db = get_db()
     try:
+        # 门店管理
         with tab1:
-            stores = db.query(Store).all()
-            if stores:
-                st.dataframe(pd.DataFrame([{
-                    "名称": s.name,
-                    "编码": s.code,
-                    "地址": s.address or "-",
-                    "电话": s.phone or "-"
-                } for s in stores]), use_container_width=True)
-            else: 
-                st.info("暂无门店")
-        with tab2:
-            with st.form("create_store"):
-                name = st.text_input("门店名称*")
-                code = st.text_input("门店编码*")
-                address = st.text_input("地址")
-                phone = st.text_input("电话")
-                if st.form_submit_button("创建"):
-                    try:
-                        db.add(Store(name=name, code=code, address=address, phone=phone))
-                        db.commit()
-                        st.success("✅ 创建成功")
-                    except IntegrityError:
-                        db.rollback()
-                        st.error("编码已存在")
-    finally: 
-        db.close()
-
-# 员工管理
-elif page == "👥 员工管理":
-    st.header("👥 员工管理")
-    tab1, tab2 = st.tabs(["员工列表", "新增员工"])
-    db = get_db()
-    try:
-        with tab1:
-            emps = db.query(Employee).all()
-            if emps:
-                st.dataframe(pd.DataFrame([{
-                    "姓名": e.name,
-                    "电话": e.phone,
-                    "职位": e.position.value
-                } for e in emps]), use_container_width=True)
-            else: 
-                st.info("暂无员工")
-        with tab2:
-            stores = db.query(Store).filter(Store.status == StoreStatus.ACTIVE).all()
-            if not stores:
-                st.warning("请先创建门店")
-            else:
-                with st.form("create_emp"):
-                    name = st.text_input("姓名*")
-                    phone = st.text_input("电话*")
-                    pos = st.selectbox("职位", [EmployeePosition.MANAGER, EmployeePosition.STAFF, EmployeePosition.CASHIER], 
-                                     format_func=lambda x: {"manager": "店长", "staff": "店员", "cashier": "收银员"}[x.value])
-                    store_id = st.selectbox("所属门店*", [(s.id, s.name) for s in stores], format_func=lambda x: x[1])
+            st.subheader("门店管理")
+            col1, col2 = st.columns([2, 1])
+            
+            with col1:
+                stores = db.query(Store).all()
+                if stores:
+                    st.dataframe(pd.DataFrame([{
+                        "名称": s.name,
+                        "编码": s.code,
+                        "地址": s.address or "-",
+                        "电话": s.phone or "-",
+                        "状态": "启用" if s.status == StoreStatus.ACTIVE else "停用"
+                    } for s in stores]), use_container_width=True)
+                else: 
+                    st.info("暂无门店")
+            
+            with col2:
+                st.write("### 新增门店")
+                with st.form("create_store"):
+                    name = st.text_input("门店名称*")
+                    code = st.text_input("门店编码*")
+                    address = st.text_input("地址")
+                    phone = st.text_input("电话")
                     if st.form_submit_button("创建"):
                         try:
-                            db.add(Employee(name=name, phone=phone, position=pos, store_id=store_id[0]))
+                            db.add(Store(name=name, code=code, address=address, phone=phone))
                             db.commit()
                             st.success("✅ 创建成功")
+                            st.rerun()
                         except IntegrityError:
                             db.rollback()
-                            st.error("电话已存在")
-    finally: 
+                            st.error("编码已存在")
+        
+        # 桌台管理
+        with tab2:
+            st.subheader("桌台管理")
+            col1, col2 = st.columns([2, 1])
+            
+            with col1:
+                stores = db.query(Store).filter(Store.status == StoreStatus.ACTIVE).all()
+                if stores:
+                    selected_store_id = st.selectbox(
+                        "选择门店查看桌台",
+                        [(s.id, s.name) for s in stores],
+                        format_func=lambda x: x[1]
+                    )
+                    
+                    tables = db.query(Table).filter(Table.store_id == selected_store_id[0]).all()
+                    if tables:
+                        st.dataframe(pd.DataFrame([{
+                            "名称": t.name,
+                            "编码": t.code,
+                            "容量": f"{t.capacity}人",
+                            "状态": get_status_text(t.status)
+                        } for t in tables]), use_container_width=True)
+                    else:
+                        st.info("该门店暂无桌台")
+                else:
+                    st.warning("请先创建门店")
+            
+            with col2:
+                st.write("### 新增桌台")
+                if stores:
+                    with st.form("create_table"):
+                        name = st.text_input("桌台名称*")
+                        code = st.text_input("桌台编码*")
+                        capacity = st.number_input("容量（人数）*", min_value=1, value=4)
+                        store_id = st.selectbox(
+                            "所属门店*",
+                            [(s.id, s.name) for s in stores],
+                            format_func=lambda x: x[1]
+                        )
+                        if st.form_submit_button("创建"):
+                            try:
+                                db.add(Table(
+                                    name=name,
+                                    code=code,
+                                    capacity=capacity,
+                                    store_id=store_id[0]
+                                ))
+                                db.commit()
+                                st.success("✅ 创建成功")
+                                st.rerun()
+                            except IntegrityError:
+                                db.rollback()
+                                st.error("编码已存在")
+                else:
+                    st.warning("请先创建门店")
+        
+        # 员工管理
+        with tab3:
+            st.subheader("员工管理")
+            col1, col2 = st.columns([2, 1])
+            
+            with col1:
+                emps = db.query(Employee).all()
+                if emps:
+                    st.dataframe(pd.DataFrame([{
+                        "姓名": e.name,
+                        "电话": e.phone,
+                        "职位": e.position.value,
+                        "所属门店": e.store_id
+                    } for e in emps]), use_container_width=True)
+                else: 
+                    st.info("暂无员工")
+            
+            with col2:
+                st.write("### 新增员工")
+                stores = db.query(Store).filter(Store.status == StoreStatus.ACTIVE).all()
+                if stores:
+                    with st.form("create_emp"):
+                        name = st.text_input("姓名*")
+                        phone = st.text_input("电话*")
+                        pos = st.selectbox("职位", [EmployeePosition.MANAGER, EmployeePosition.STAFF, EmployeePosition.CASHIER], 
+                                         format_func=lambda x: {"manager": "店长", "staff": "店员", "cashier": "收银员"}[x.value])
+                        store_id = st.selectbox("所属门店*", [(s.id, s.name) for s in stores], format_func=lambda x: x[1])
+                        if st.form_submit_button("创建"):
+                            try:
+                                db.add(Employee(name=name, phone=phone, position=pos, store_id=store_id[0]))
+                                db.commit()
+                                st.success("✅ 创建成功")
+                                st.rerun()
+                            except IntegrityError:
+                                db.rollback()
+                                st.error("电话已存在")
+                else:
+                    st.warning("请先创建门店")
+        
+        # 商品管理
+        with tab4:
+            st.subheader("商品管理")
+            col1, col2 = st.columns([2, 1])
+            
+            with col1:
+                products = db.query(Product).all()
+                if products:
+                    st.dataframe(pd.DataFrame([{
+                        "名称": p.name,
+                        "编码": p.code,
+                        "分类": p.category,
+                        "单价": f"¥{p.unit_price:.2f}",
+                        "单位": p.unit
+                    } for p in products]), use_container_width=True)
+                else: 
+                    st.info("暂无商品")
+            
+            with col2:
+                st.write("### 新增商品")
+                with st.form("create_product"):
+                    name = st.text_input("商品名称*")
+                    code = st.text_input("商品编码*")
+                    category = st.selectbox("分类", ["茶叶", "茶具", "点心", "饮品"])
+                    price = st.number_input("单价*", min_value=0.0, step=1.0)
+                    unit = st.text_input("单位*")
+                    if st.form_submit_button("创建"):
+                        try:
+                            db.add(Product(name=name, code=code, category=category, unit_price=price, unit=unit))
+                            db.commit()
+                            st.success("✅ 创建成功")
+                            st.rerun()
+                        except IntegrityError:
+                            db.rollback()
+                            st.error("编码已存在")
+        
+        # 库存管理
+        with tab5:
+            st.subheader("库存管理")
+            col1, col2 = st.columns([2, 1])
+            
+            with col1:
+                stores = db.query(Store).filter(Store.status == StoreStatus.ACTIVE).all()
+                if stores:
+                    store_id = st.selectbox("选择门店", [(s.id, s.name) for s in stores], format_func=lambda x: x[1])
+                    invs = db.query(Inventory).filter(Inventory.store_id == store_id[0]).all()
+                    if invs:
+                        data = []
+                        for inv in invs:
+                            p = db.query(Product).get(inv.product_id)
+                            data.append({"商品": p.name, "数量": inv.quantity})
+                        st.dataframe(pd.DataFrame(data), use_container_width=True)
+                    else: 
+                        st.info("暂无库存")
+                else:
+                    st.warning("请先创建门店")
+            
+            with col2:
+                st.write("### 库存入库")
+                stores = db.query(Store).filter(Store.status == StoreStatus.ACTIVE).all()
+                products = db.query(Product).all()
+                if stores and products:
+                    with st.form("add_stock"):
+                        sid = st.selectbox("门店", [(s.id, s.name) for s in stores], format_func=lambda x: x[1])
+                        pid = st.selectbox("商品", [(p.id, p.name) for p in products], format_func=lambda x: x[1])
+                        qty = st.number_input("数量*", min_value=1)
+                        if st.form_submit_button("入库"):
+                            inv = db.query(Inventory).filter(Inventory.store_id == sid[0], Inventory.product_id == pid[0]).first()
+                            if inv:
+                                inv.quantity += qty
+                            else:
+                                db.add(Inventory(store_id=sid[0], product_id=pid[0], quantity=qty))
+                            db.commit()
+                            st.success("✅ 入库成功")
+                            st.rerun()
+                else:
+                    st.warning("请先创建门店和商品")
+    
+    finally:
         db.close()
 
 # 会员管理
@@ -792,82 +942,10 @@ elif page == "💎 会员管理":
                         db.add(Member(name=name, phone=phone))
                         db.commit()
                         st.success("✅ 创建成功")
+                        st.rerun()
                     except IntegrityError:
                         db.rollback()
                         st.error("电话已存在")
-    finally: 
-        db.close()
-
-# 商品管理
-elif page == "🛍️ 商品管理":
-    st.header("🛍️ 商品管理")
-    tab1, tab2 = st.tabs(["商品列表", "新增商品"])
-    db = get_db()
-    try:
-        with tab1:
-            products = db.query(Product).all()
-            if products:
-                st.dataframe(pd.DataFrame([{
-                    "名称": p.name,
-                    "编码": p.code,
-                    "分类": p.category,
-                    "单价": f"¥{p.unit_price:.2f}"
-                } for p in products]), use_container_width=True)
-            else: 
-                st.info("暂无商品")
-        with tab2:
-            with st.form("create_product"):
-                name = st.text_input("商品名称*")
-                code = st.text_input("商品编码*")
-                category = st.selectbox("分类", ["茶叶", "茶具", "点心", "饮品"])
-                price = st.number_input("单价*", min_value=0.0, step=1.0)
-                unit = st.text_input("单位*")
-                if st.form_submit_button("创建"):
-                    try:
-                        db.add(Product(name=name, code=code, category=category, unit_price=price, unit=unit))
-                        db.commit()
-                        st.success("✅ 创建成功")
-                    except IntegrityError:
-                        db.rollback()
-                        st.error("编码已存在")
-    finally: 
-        db.close()
-
-# 库存管理
-elif page == "📦 库存管理":
-    st.header("📦 库存管理")
-    tab1, tab2 = st.tabs(["库存查询", "库存入库"])
-    db = get_db()
-    try:
-        with tab1:
-            stores = db.query(Store).filter(Store.status == StoreStatus.ACTIVE).all()
-            if stores:
-                store_id = st.selectbox("选择门店", [(s.id, s.name) for s in stores], format_func=lambda x: x[1])
-                invs = db.query(Inventory).filter(Inventory.store_id == store_id[0]).all()
-                if invs:
-                    data = []
-                    for inv in invs:
-                        p = db.query(Product).get(inv.product_id)
-                        data.append({"商品": p.name, "数量": inv.quantity})
-                    st.dataframe(pd.DataFrame(data), use_container_width=True)
-                else: 
-                    st.info("暂无库存")
-        with tab2:
-            stores = db.query(Store).filter(Store.status == StoreStatus.ACTIVE).all()
-            products = db.query(Product).all()
-            if stores and products:
-                with st.form("add_stock"):
-                    sid = st.selectbox("门店", [(s.id, s.name) for s in stores], format_func=lambda x: x[1])
-                    pid = st.selectbox("商品", [(p.id, p.name) for p in products], format_func=lambda x: x[1])
-                    qty = st.number_input("数量*", min_value=1)
-                    if st.form_submit_button("入库"):
-                        inv = db.query(Inventory).filter(Inventory.store_id == sid[0], Inventory.product_id == pid[0]).first()
-                        if inv:
-                            inv.quantity += qty
-                        else:
-                            db.add(Inventory(store_id=sid[0], product_id=pid[0], quantity=qty))
-                        db.commit()
-                        st.success("✅ 入库成功")
     finally: 
         db.close()
 
