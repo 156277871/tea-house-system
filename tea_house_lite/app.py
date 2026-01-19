@@ -170,6 +170,10 @@ st.set_page_config(page_title="连锁茶楼管理系统", page_icon="🏪", layo
 st.markdown("""
 <style>
 /* 亮色主题 - 主背景 */
+.stApp {
+    background-color: #ffffff !important;
+}
+
 .main .block-container {
     background-color: #ffffff !important;
     color: #1f1f1f !important;
@@ -178,6 +182,11 @@ st.markdown("""
 /* 亮色主题 - 侧边栏 */
 [data-testid="stSidebar"] {
     background-color: #f8f9fa !important;
+    color: #1f1f1f !important;
+}
+
+/* 侧边栏所有文字颜色 */
+[data-testid="stSidebar"] * {
     color: #1f1f1f !important;
 }
 
@@ -192,6 +201,7 @@ h1, h2, h3, h4, h5, h6 {
     border: none !important;
     box-shadow: none !important;
     padding: 8px 12px;
+    color: #1f1f1f !important;
 }
 
 /* 导航栏 - 当前页面深灰色 */
@@ -203,7 +213,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* 导航栏 - 当前页面文字颜色 */
-[data-testid="stSidebar"] [role="radiogroup"] label[data-selected="true"] p {
+[data-testid="stSidebar"] [role="radiogroup"] label[data-selected="true"] * {
     color: #ffffff !important;
 }
 </style>
