@@ -169,34 +169,53 @@ st.set_page_config(page_title="连锁茶楼管理系统", page_icon="🏪", layo
 # 自定义CSS：亮色主题 + 导航栏样式
 st.markdown("""
 <style>
-/* 亮色主题 - 主背景 */
+/* ==================== 全局样式 ==================== */
+/* 亮色主题 - 整体背景 */
 .stApp {
     background-color: #ffffff !important;
 }
 
+/* 主区域背景和文字 */
 .main .block-container {
     background-color: #ffffff !important;
     color: #1f1f1f !important;
 }
 
-/* 亮色主题 - 侧边栏 */
+/* 主区域所有文字元素 */
+.main {
+    color: #1f1f1f !important;
+}
+
+.main p, .main div, .main span, .main label {
+    color: #1f1f1f !important;
+}
+
+/* 标题颜色 */
+h1, h2, h3, h4, h5, h6 {
+    color: #1f1f1f !important;
+}
+
+/* ==================== 侧边栏样式 ==================== */
+/* 侧边栏背景 */
 [data-testid="stSidebar"] {
     background-color: #f8f9fa !important;
     color: #1f1f1f !important;
 }
 
-/* 侧边栏所有文字颜色 */
-[data-testid="stSidebar"] * {
+/* 侧边栏文字（但不包括选中状态） */
+[data-testid="stSidebar"] p,
+[data-testid="stSidebar"] label,
+[data-testid="stSidebar"] div,
+[data-testid="stSidebar"] span,
+[data-testid="stSidebar"] h1,
+[data-testid="stSidebar"] h2,
+[data-testid="stSidebar"] h3 {
     color: #1f1f1f !important;
 }
 
-/* 亮色主题 - 标题 */
-h1, h2, h3, h4, h5, h6 {
-    color: #1f1f1f !important;
-}
-
-/* 导航栏 - 去掉默认选中样式 */
-[data-testid="stSidebar"] [role="radiogroup"] label {
+/* ==================== 导航栏样式 ==================== */
+/* 导航栏 - 未选中状态 */
+[data-testid="stSidebar"] [role="radiogroup"] label:not([data-selected="true"]) {
     background-color: transparent !important;
     border: none !important;
     box-shadow: none !important;
@@ -204,7 +223,7 @@ h1, h2, h3, h4, h5, h6 {
     color: #1f1f1f !important;
 }
 
-/* 导航栏 - 当前页面深灰色 */
+/* 导航栏 - 选中状态 */
 [data-testid="stSidebar"] [role="radiogroup"] label[data-selected="true"] {
     background-color: #6c757d !important;
     color: #ffffff !important;
@@ -212,28 +231,101 @@ h1, h2, h3, h4, h5, h6 {
     margin: 4px 0;
 }
 
-/* 导航栏 - 当前页面文字颜色 */
-[data-testid="stSidebar"] [role="radiogroup"] label[data-selected="true"] * {
+/* 选中状态的图标和文字 */
+[data-testid="stSidebar"] [role="radiogroup"] label[data-selected="true"] p,
+[data-testid="stSidebar"] [role="radiogroup"] label[data-selected="true"] span,
+[data-testid="stSidebar"] [role="radiogroup"] label[data-selected="true"] div {
     color: #ffffff !important;
 }
 
-/* 按钮样式 - 确保文字可见 */
+/* ==================== 按钮样式 ==================== */
+/* 主按钮 */
 button[kind="primary"] {
     background-color: #ff6b6b !important;
     color: #ffffff !important;
     border: none !important;
 }
 
+/* 次要按钮 */
 button[kind="secondary"] {
     background-color: #6c757d !important;
     color: #ffffff !important;
     border: none !important;
 }
 
-/* 表单提交按钮样式 */
+/* 表单提交按钮 */
 .stForm button {
     background-color: #ff6b6b !important;
     color: #ffffff !important;
+    border: none !important;
+}
+
+/* 所有按钮文字 */
+button {
+    color: #ffffff !important;
+}
+
+/* ==================== 表单元素样式 ==================== */
+/* 文本输入框 */
+.stTextInput input, .stTextArea textarea, .stNumberInput input {
+    color: #1f1f1f !important;
+    background-color: #ffffff !important;
+}
+
+/* 下拉选择框 */
+.stSelectbox select, .stMultiSelect select {
+    color: #1f1f1f !important;
+    background-color: #ffffff !important;
+}
+
+/* 日期选择器 */
+.stDateInput input {
+    color: #1f1f1f !important;
+    background-color: #ffffff !important;
+}
+
+/* ==================== 数据表格样式 ==================== */
+/* 数据表格 */
+.stDataFrame {
+    color: #1f1f1f !important;
+}
+
+.stDataFrame table {
+    color: #1f1f1f !important;
+}
+
+.stDataFrame th, .stDataFrame td {
+    color: #1f1f1f !important;
+}
+
+/* ==================== 提示信息样式 ==================== */
+/* 成功提示 */
+.stAlert {
+    color: #1f1f1f !important;
+}
+
+/* 信息提示 */
+.stInfo {
+    color: #1f1f1f !important;
+}
+
+/* 警告提示 */
+.stWarning {
+    color: #1f1f1f !important;
+}
+
+/* 错误提示 */
+.stError {
+    color: #1f1f1f !important;
+}
+
+/* ==================== Metric 指标样式 ==================== */
+[data-testid="stMetricValue"] {
+    color: #1f1f1f !important;
+}
+
+[data-testid="stMetricLabel"] {
+    color: #1f1f1f !important;
 }
 </style>
 """, unsafe_allow_html=True)
