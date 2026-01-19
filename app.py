@@ -181,17 +181,17 @@ st.markdown("""
     color: #1f1f1f !important;
 }
 
-/* 主区域所有文字元素 */
-.main {
-    color: #1f1f1f !important;
-}
-
-.main p, .main div, .main span, .main label {
+/* 主区域所有文字元素 - 使用更全面的选择器 */
+.main,
+.main [class*="st"],
+.main * {
     color: #1f1f1f !important;
 }
 
 /* 标题颜色 */
-h1, h2, h3, h4, h5, h6 {
+h1, h2, h3, h4, h5, h6, 
+.main h1, .main h2, .main h3, .main h4, .main h5, .main h6,
+[data-testid="stHeader"] {
     color: #1f1f1f !important;
 }
 
@@ -199,27 +199,26 @@ h1, h2, h3, h4, h5, h6 {
 /* 侧边栏背景 */
 [data-testid="stSidebar"] {
     background-color: #f8f9fa !important;
-    color: #1f1f1f !important;
 }
 
-/* 侧边栏文字（但不包括选中状态） */
-[data-testid="stSidebar"] p,
-[data-testid="stSidebar"] label,
-[data-testid="stSidebar"] div,
-[data-testid="stSidebar"] span,
-[data-testid="stSidebar"] h1,
-[data-testid="stSidebar"] h2,
-[data-testid="stSidebar"] h3 {
-    color: #1f1f1f !important;
-}
-
-/* ==================== 导航栏样式 ==================== */
-/* 导航栏 - 未选中状态 */
+/* 侧边栏文字（但不包括选中状态） - 精确控制 */
 [data-testid="stSidebar"] [role="radiogroup"] label:not([data-selected="true"]) {
     background-color: transparent !important;
     border: none !important;
     box-shadow: none !important;
     padding: 8px 12px;
+    color: #1f1f1f !important;
+}
+
+[data-testid="stSidebar"] [role="radiogroup"] label:not([data-selected="true"]) p,
+[data-testid="stSidebar"] [role="radiogroup"] label:not([data-selected="true"]) span,
+[data-testid="stSidebar"] [role="radiogroup"] label:not([data-selected="true"]) div {
+    color: #1f1f1f !important;
+}
+
+/* 侧边栏标题 */
+[data-testid="stSidebar"] h1, 
+[data-testid="stSidebar"] .css-title {
     color: #1f1f1f !important;
 }
 
@@ -236,6 +235,11 @@ h1, h2, h3, h4, h5, h6 {
 [data-testid="stSidebar"] [role="radiogroup"] label[data-selected="true"] span,
 [data-testid="stSidebar"] [role="radiogroup"] label[data-selected="true"] div {
     color: #ffffff !important;
+}
+
+/* ==================== Tabs 标签样式 ==================== */
+[data-testid="stTabs"] [role="tablist"] button {
+    color: #1f1f1f !important;
 }
 
 /* ==================== 按钮样式 ==================== */
@@ -266,6 +270,11 @@ button {
 }
 
 /* ==================== 表单元素样式 ==================== */
+/* 表单标签 */
+label, [data-testid="stLabel"] {
+    color: #1f1f1f !important;
+}
+
 /* 文本输入框 */
 .stTextInput input, .stTextArea textarea, .stNumberInput input {
     color: #1f1f1f !important;
@@ -286,45 +295,53 @@ button {
 
 /* ==================== 数据表格样式 ==================== */
 /* 数据表格 */
-.stDataFrame {
-    color: #1f1f1f !important;
-}
-
-.stDataFrame table {
-    color: #1f1f1f !important;
-}
-
-.stDataFrame th, .stDataFrame td {
+.stDataFrame, 
+.stDataFrame table, 
+.stDataFrame th, 
+.stDataFrame td,
+.stDataFrame thead, 
+.stDataFrame tbody,
+.stDataFrame tr,
+.stDataFrame .dataframe {
     color: #1f1f1f !important;
 }
 
 /* ==================== 提示信息样式 ==================== */
-/* 成功提示 */
-.stAlert {
+/* 成功、信息、警告、错误提示 */
+.stAlert,
+.stAlert [class*="alert"],
+.css-1aumxhk,
+.css-1ecm90u,
+.css-1b6xy20,
+.css-1kq748w {
     color: #1f1f1f !important;
 }
 
-/* 信息提示 */
-.stInfo {
+/* Streamlit 提示容器 */
+[data-testid="stInfoContainer"],
+[data-testid="stSuccessContainer"],
+[data-testid="stWarningContainer"],
+[data-testid="stErrorContainer"] {
     color: #1f1f1f !important;
 }
 
-/* 警告提示 */
-.stWarning {
-    color: #1f1f1f !important;
-}
-
-/* 错误提示 */
-.stError {
+[data-testid="stInfoContainer"] *,
+[data-testid="stSuccessContainer"] *,
+[data-testid="stWarningContainer"] *,
+[data-testid="stErrorContainer"] * {
     color: #1f1f1f !important;
 }
 
 /* ==================== Metric 指标样式 ==================== */
-[data-testid="stMetricValue"] {
+[data-testid="stMetricValue"],
+[data-testid="stMetricLabel"],
+[data-testid="stMetricDelta"] {
     color: #1f1f1f !important;
 }
 
-[data-testid="stMetricLabel"] {
+/* ==================== 其他元素样式 ==================== */
+/* 所有div、span、p等文本元素 */
+div, span, p, li, td, th {
     color: #1f1f1f !important;
 }
 </style>
