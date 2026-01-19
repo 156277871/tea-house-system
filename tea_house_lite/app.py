@@ -216,6 +216,25 @@ h1, h2, h3, h4, h5, h6 {
 [data-testid="stSidebar"] [role="radiogroup"] label[data-selected="true"] * {
     color: #ffffff !important;
 }
+
+/* 按钮样式 - 确保文字可见 */
+button[kind="primary"] {
+    background-color: #ff6b6b !important;
+    color: #ffffff !important;
+    border: none !important;
+}
+
+button[kind="secondary"] {
+    background-color: #6c757d !important;
+    color: #ffffff !important;
+    border: none !important;
+}
+
+/* 表单提交按钮样式 */
+.stForm button {
+    background-color: #ff6b6b !important;
+    color: #ffffff !important;
+}
 </style>
 """, unsafe_allow_html=True)
 
@@ -730,7 +749,7 @@ elif page == "⚙️ 设置":
                     code = st.text_input("门店编码*")
                     address = st.text_input("地址")
                     phone = st.text_input("电话")
-                    if st.form_submit_button("创建"):
+                    if st.form_submit_button("创建", type="primary"):
                         try:
                             db.add(Store(name=name, code=code, address=address, phone=phone))
                             db.commit()
@@ -779,7 +798,7 @@ elif page == "⚙️ 设置":
                             [(s.id, s.name) for s in stores],
                             format_func=lambda x: x[1]
                         )
-                        if st.form_submit_button("创建"):
+                        if st.form_submit_button("创建", type="primary"):
                             try:
                                 db.add(Table(
                                     name=name,
@@ -823,7 +842,7 @@ elif page == "⚙️ 设置":
                         pos = st.selectbox("职位", [EmployeePosition.MANAGER, EmployeePosition.STAFF, EmployeePosition.CASHIER], 
                                          format_func=lambda x: {"manager": "店长", "staff": "店员", "cashier": "收银员"}[x.value])
                         store_id = st.selectbox("所属门店*", [(s.id, s.name) for s in stores], format_func=lambda x: x[1])
-                        if st.form_submit_button("创建"):
+                        if st.form_submit_button("创建", type="primary"):
                             try:
                                 db.add(Employee(name=name, phone=phone, position=pos, store_id=store_id[0]))
                                 db.commit()
@@ -861,7 +880,7 @@ elif page == "⚙️ 设置":
                     category = st.selectbox("分类", ["茶叶", "茶具", "点心", "饮品"])
                     price = st.number_input("单价*", min_value=0.0, step=1.0)
                     unit = st.text_input("单位*")
-                    if st.form_submit_button("创建"):
+                    if st.form_submit_button("创建", type="primary"):
                         try:
                             db.add(Product(name=name, code=code, category=category, unit_price=price, unit=unit))
                             db.commit()
@@ -901,7 +920,7 @@ elif page == "⚙️ 设置":
                         sid = st.selectbox("门店", [(s.id, s.name) for s in stores], format_func=lambda x: x[1])
                         pid = st.selectbox("商品", [(p.id, p.name) for p in products], format_func=lambda x: x[1])
                         qty = st.number_input("数量*", min_value=1)
-                        if st.form_submit_button("入库"):
+                        if st.form_submit_button("入库", type="primary"):
                             inv = db.query(Inventory).filter(Inventory.store_id == sid[0], Inventory.product_id == pid[0]).first()
                             if inv:
                                 inv.quantity += qty
@@ -937,7 +956,7 @@ elif page == "💎 会员管理":
             with st.form("create_member"):
                 name = st.text_input("姓名*")
                 phone = st.text_input("电话*")
-                if st.form_submit_button("创建"):
+                if st.form_submit_button("创建", type="primary"):
                     try:
                         db.add(Member(name=name, phone=phone))
                         db.commit()
