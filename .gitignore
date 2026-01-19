@@ -1,19 +1,42 @@
-node_modules
-dist
-.DS_Store
-*.swp
-.git/*
-__pycache__/
-*.pyc
-.venv/*
-*.o
-*.a
-/vendor
-*.egg-info/
-/.env
-.env
+# 数据库文件
 *.db
+*.sqlite
+*.sqlite3
+
+# Python缓存
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Streamlit相关
+.streamlit/
+
+# 日志文件
+*.log
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# 打包文件
 *.tar.gz
-tea_house_lite/*.db
-tea_house_lite/*.tar.gz
-tea_house_lite/upload_*.py
+*.zip
+*.rar
+
+# 临时文件
+tmp/
+temp/
+/tmp/
+
+# 环境变量
+.env
+.env.local
+
+# 系统文件
+.DS_Store
+Thumbs.db
