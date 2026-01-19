@@ -1,0 +1,21 @@
+[browser]
+gatherUsageStats = false
+
+[logger]
+level = "info"
+
+[client]
+showErrorDetails = true
+
+[server]
+maxUploadSize = 200
+headless = true
+enableCORS = true
+enableXsrfProtection = true
+
+[theme]
+primaryColor = "#FF6B6B"
+backgroundColor = "#FFFFFF"
+secondaryBackgroundColor = "#F8F9FA"
+textColor = "#1F1F1F"
+font = "sans serif"
