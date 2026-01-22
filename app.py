@@ -515,8 +515,18 @@ label, [data-testid="stLabel"] {
     background-color: #ffffff !important;
 }
 
-/* 下拉选择框 */
-.stSelectbox select, .stMultiSelect select {
+/* 下拉选择框 - 底色白色，字体黑色 */
+.stSelectbox select, 
+.stMultiSelect select,
+.stSelectbox .stSelectbox,
+.stMultiSelect .stMultiSelect {
+    color: #1f1f1f !important;
+    background-color: #ffffff !important;
+}
+
+/* 下拉选择框选项 */
+.stSelectbox option, 
+.stMultiSelect option {
     color: #1f1f1f !important;
     background-color: #ffffff !important;
 }
@@ -528,7 +538,31 @@ label, [data-testid="stLabel"] {
 }
 
 /* ==================== 数据表格样式 ==================== */
-/* 数据表格 */
+/* 数据表格 - 表体白色，字体黑色 */
+.stDataFrame,
+.stDataFrame table {
+    background-color: #ffffff !important;
+}
+
+/* 数据表格 - 表头浅灰色，字体黑色 */
+.stDataFrame thead,
+.stDataFrame thead th,
+.stDataFrame th {
+    background-color: #f0f0f0 !important;
+    color: #1f1f1f !important;
+    font-weight: bold;
+}
+
+/* 数据表格 - 表体白色，字体黑色 */
+.stDataFrame tbody,
+.stDataFrame tbody tr,
+.stDataFrame tbody td,
+.stDataFrame td {
+    background-color: #ffffff !important;
+    color: #1f1f1f !important;
+}
+
+/* 数据表格 - 所有元素 */
 .stDataFrame, 
 .stDataFrame table, 
 .stDataFrame th, 
@@ -538,6 +572,11 @@ label, [data-testid="stLabel"] {
 .stDataFrame tr,
 .stDataFrame .dataframe {
     color: #1f1f1f !important;
+}
+
+/* 选中行样式 */
+.stDataFrame tr:hover td {
+    background-color: #f8f9fa !important;
 }
 
 /* ==================== 提示信息样式 ==================== */
@@ -1430,9 +1469,8 @@ elif page == "📦 库存台账":
                     "adjust": "调整"
                 }
                 
-                # 创建可点击的DataFrame
+                # 创建DataFrame
                 df = pd.DataFrame([{
-                    "查看": "🔍 查看详情",
                     "ID": log.id,
                     "门店": stores_dict.get(log.store_id, "未知"),
                     "商品": products_dict.get(log.product_id, "未知"),
@@ -1444,13 +1482,8 @@ elif page == "📦 库存台账":
                     "时间": log.created_at.strftime("%Y-%m-%d %H:%M:%S")
                 } for log in logs])
                 
-                # 设置列宽
-                column_config = {
-                    "查看": st.column_config.ButtonColumn("查看详情", width="small", help="点击查看详细信息")
-                }
-                
-                # 显示表格
-                event = st.dataframe(df, use_container_width=True, column_config=column_config, hide_index=True, on_select="rerun", selection_mode="single-row")
+                # 显示表格（支持行选择）
+                event = st.dataframe(df, use_container_width=True, hide_index=True, on_select="rerun", selection_mode="single-row")
                 
                 # 显示选中行的详情
                 if event.selection['rows']:
@@ -1538,9 +1571,8 @@ elif page == "📦 库存台账":
                     # 获取商品信息
                     products_dict = {p.id: p for p in db.query(Product).all()}
                     
-                    # 创建可点击的DataFrame
+                    # 创建DataFrame
                     df = pd.DataFrame([{
-                        "查看": "🔍 查看详情",
                         "商品ID": inv.product_id,
                         "商品名称": products_dict.get(inv.product_id, {}).name if inv.product_id in products_dict else "未知",
                         "商品编码": products_dict.get(inv.product_id, {}).code if inv.product_id in products_dict else "未知",
@@ -1550,14 +1582,8 @@ elif page == "📦 库存台账":
                         "库存价值": f"¥{inv.quantity * products_dict.get(inv.product_id, {}).unit_price:.2f}" if inv.product_id in products_dict else "-"
                     } for inv in inventories])
                     
-                    # 设置列配置
-                    column_config = {
-                        "查看": st.column_config.ButtonColumn("查看详情", width="small", help="点击查看库存流水记录"),
-                        "商品ID": None  # 隐藏ID列
-                    }
-                    
-                    # 显示表格
-                    event = st.dataframe(df, use_container_width=True, column_config=column_config, hide_index=True, on_select="rerun", selection_mode="single-row")
+                    # 显示表格（支持行选择）
+                    event = st.dataframe(df, use_container_width=True, hide_index=True, on_select="rerun", selection_mode="single-row")
                     
                     # 显示选中行的详情
                     if event.selection['rows']:
