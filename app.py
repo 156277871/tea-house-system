@@ -174,6 +174,210 @@ def get_db():
     return SessionLocal()
 
 # 数据库初始化和升级
+def init_sample_data_auto():
+    """自动初始化示例数据"""
+    db = SessionLocal()
+    try:
+        # 检查是否已有数据（以门店为标准）
+        store_count = db.query(Store).count()
+        
+        if store_count == 0:
+            print("检测到空数据库，开始初始化示例数据...")
+            
+            # 1. 创建门店
+            store_data = [
+                {"name": "茶楼总店", "code": "ST001", "address": "市中心商业街1号", "phone": "010-88888888"},
+                {"name": "茶楼东城店", "code": "ST002", "address": "东城区朝阳路88号", "phone": "010-66666666"},
+                {"name": "茶楼西城店", "code": "ST003", "address": "西城区复兴路123号", "phone": "010-77777777"},
+                {"name": "茶楼南山店", "code": "ST004", "address": "南山区科技大道66号", "phone": "0755-99999999"},
+                {"name": "茶楼北湖店", "code": "ST005", "address": "北湖区环湖路88号", "phone": "027-55555555"},
+                {"name": "茶楼新城店", "code": "ST006", "address": "新城开发区金桥路66号", "phone": "020-44444444"},
+            ]
+            
+            stores = []
+            for data in store_data:
+                store = Store(name=data["name"], code=data["code"], 
+                            address=data["address"], phone=data["phone"], 
+                            status=StoreStatus.ACTIVE)
+                db.add(store)
+                db.flush()
+                stores.append(store)
+            
+            # 2. 创建员工
+            employee_data = [
+                {"name": "张经理", "phone": "13800138001", "position": EmployeePosition.MANAGER, "store_id": stores[0].id},
+                {"name": "李店长", "phone": "13800138002", "position": EmployeePosition.MANAGER, "store_id": stores[1].id},
+                {"name": "王员工", "phone": "13800138003", "position": EmployeePosition.STAFF, "store_id": stores[0].id},
+                {"name": "赵员工", "phone": "13800138004", "position": EmployeePosition.STAFF, "store_id": stores[1].id},
+                {"name": "孙员工", "phone": "13800138005", "position": EmployeePosition.STAFF, "store_id": stores[2].id},
+                {"name": "周员工", "phone": "13800138006", "position": EmployeePosition.CASHIER, "store_id": stores[0].id},
+            ]
+            
+            for data in employee_data:
+                employee = Employee(**data)
+                db.add(employee)
+            
+            # 3. 创建商品
+            product_data = [
+                {"name": "龙井绿茶", "code": "P001", "category": "茶叶", "unit_price": 68.00, "unit": "壶"},
+                {"name": "普洱熟茶", "code": "P002", "category": "茶叶", "unit_price": 88.00, "unit": "壶"},
+                {"name": "铁观音", "code": "P003", "category": "茶叶", "unit_price": 78.00, "unit": "壶"},
+                {"name": "大红袍", "code": "P004", "category": "茶叶", "unit_price": 128.00, "unit": "壶"},
+                {"name": "茉莉花茶", "code": "P005", "category": "茶叶", "unit_price": 58.00, "unit": "壶"},
+                {"name": "菊花茶", "code": "P006", "category": "花茶", "unit_price": 48.00, "unit": "杯"},
+                {"name": "玫瑰花茶", "code": "P007", "category": "花茶", "unit_price": 58.00, "unit": "杯"},
+                {"name": "柠檬茶", "code": "P008", "category": "花茶", "unit_price": 38.00, "unit": "杯"},
+                {"name": "瓜子", "code": "S001", "category": "零食", "unit_price": 18.00, "unit": "份"},
+                {"name": "花生", "code": "S002", "category": "零食", "unit_price": 18.00, "unit": "份"},
+                {"name": "开心果", "code": "S003", "category": "零食", "unit_price": 38.00, "unit": "份"},
+                {"name": "腰果", "code": "S004", "category": "零食", "unit_price": 32.00, "unit": "份"},
+                {"name": "话梅", "code": "S005", "category": "零食", "unit_price": 15.00, "unit": "份"},
+                {"name": "薯片", "code": "S006", "category": "零食", "unit_price": 12.00, "unit": "份"},
+                {"name": "水煮鱼", "code": "D001", "category": "菜品", "unit_price": 88.00, "unit": "份"},
+                {"name": "宫保鸡丁", "code": "D002", "category": "菜品", "unit_price": 58.00, "unit": "份"},
+                {"name": "麻婆豆腐", "code": "D003", "category": "菜品", "unit_price": 38.00, "unit": "份"},
+                {"name": "鱼香肉丝", "code": "D004", "category": "菜品", "unit_price": 48.00, "unit": "份"},
+            ]
+            
+            products = []
+            for data in product_data:
+                product = Product(**data)
+                db.add(product)
+                db.flush()
+                products.append(product)
+            
+            # 4. 创建桌台
+            for i, store in enumerate(stores):
+                for j in range(8):
+                    table = Table(
+                        name=f"{store.name}桌台{j+1}号",
+                        code=f"T{i+1:02d}{j+1:02d}",
+                        store_id=store.id,
+                        capacity=[2, 4, 6, 8][j % 4],
+                        status=TableStatus.FREE
+                    )
+                    db.add(table)
+            
+            # 5. 创建库存和库存流水
+            for store in stores:
+                for product in products:
+                    quantity = 20 + (product.id * 5) % 80
+                    inv = Inventory(store_id=store.id, product_id=product.id, quantity=quantity)
+                    db.add(inv)
+                    db.flush()
+                    
+                    # 创建初始入库流水
+                    log = InventoryLog(
+                        store_id=store.id,
+                        product_id=product.id,
+                        log_type=InventoryLogType.IN,
+                        quantity=quantity,
+                        before_quantity=0,
+                        after_quantity=quantity,
+                        remark=f"初始入库 {quantity} 件"
+                    )
+                    db.add(log)
+            
+            # 6. 创建会员
+            member_data = [
+                {"name": "王先生", "phone": "13900139001", "level": MemberLevel.GOLD, "balance": 500.00},
+                {"name": "李女士", "phone": "13900139002", "level": MemberLevel.DIAMOND, "balance": 1000.00},
+                {"name": "张先生", "phone": "13900139003", "level": MemberLevel.SILVER, "balance": 300.00},
+                {"name": "赵女士", "phone": "13900139004", "level": MemberLevel.NORMAL, "balance": 100.00},
+                {"name": "陈先生", "phone": "13900139005", "level": MemberLevel.GOLD, "balance": 800.00},
+                {"name": "刘女士", "phone": "13900139006", "level": MemberLevel.SILVER, "balance": 250.00},
+                {"name": "黄先生", "phone": "13900139007", "level": MemberLevel.NORMAL, "balance": 0.00},
+                {"name": "周女士", "phone": "13900139008", "level": MemberLevel.DIAMOND, "balance": 2000.00},
+            ]
+            
+            members = []
+            for data in member_data:
+                member = Member(**data)
+                db.add(member)
+                db.flush()
+                members.append(member)
+            
+            # 7. 创建订单和会话
+            for i in range(20):
+                store = stores[i % len(stores)]
+                member = members[i % len(members)]
+                
+                order_no = f"ORD{datetime.now() - timedelta(days=i):%Y%m%d%H%M%S}{i:02d}"
+                order = Order(
+                    order_no=order_no,
+                    store_id=store.id,
+                    member_id=member.id,
+                    total_amount=150.0 + (i * 10),
+                    payment_method=[PaymentMethod.WECHAT, PaymentMethod.ALIPAY, PaymentMethod.CASH][i % 3],
+                    status=OrderStatus.COMPLETED,
+                    created_at=datetime.now() - timedelta(days=i)
+                )
+                db.add(order)
+                db.flush()
+                
+                for j in range(3):
+                    product = products[(i + j) % len(products)]
+                    quantity = 1 + j % 2
+                    subtotal = product.unit_price * quantity
+                    
+                    order_item = OrderItem(
+                        order_id=order.id,
+                        product_id=product.id,
+                        quantity=quantity,
+                        unit_price=product.unit_price,
+                        subtotal=subtotal
+                    )
+                    db.add(order_item)
+            
+            # 8. 创建会话
+            tables = db.query(Table).limit(10).all()
+            for i, table in enumerate(tables):
+                store = db.query(Store).get(table.store_id)
+                member = members[i % len(members)]
+                
+                duration = 60 + i * 15
+                start_time = datetime.now() - timedelta(days=i, hours=duration // 60)
+                end_time = start_time + timedelta(minutes=duration)
+                
+                session = Session(
+                    table_id=table.id,
+                    store_id=store.id,
+                    member_id=member.id,
+                    start_time=start_time,
+                    end_time=end_time,
+                    status=SessionStatus.COMPLETED,
+                    duration_minutes=duration,
+                    total_amount=100.0 + i * 20
+                )
+                db.add(session)
+                db.flush()
+                
+                for j in range(2):
+                    product = products[(i + j) % len(products)]
+                    quantity = 1
+                    subtotal = product.unit_price * quantity
+                    
+                    session_item = SessionItem(
+                        session_id=session.id,
+                        product_id=product.id,
+                        quantity=quantity,
+                        unit_price=product.unit_price,
+                        subtotal=subtotal,
+                        order_time=start_time + timedelta(minutes=j * 10)
+                    )
+                    db.add(session_item)
+            
+            db.commit()
+            print("✅ 示例数据初始化完成！")
+        else:
+            print(f"✅ 数据库已有数据（{store_count}家门店），跳过初始化")
+    except Exception as e:
+        print(f"❌ 初始化失败: {str(e)}")
+        db.rollback()
+        raise
+    finally:
+        db.close()
+
 def init_database():
     """初始化和升级数据库"""
     # 创建所有表（如果不存在）
@@ -186,6 +390,9 @@ def init_database():
     # 如果inventory_logs表不存在，创建它
     if 'inventory_logs' not in existing_tables:
         InventoryLog.__table__.create(bind=engine)
+    
+    # 自动初始化示例数据（如果数据库为空）
+    init_sample_data_auto()
 
 # 初始化数据库
 init_database()
