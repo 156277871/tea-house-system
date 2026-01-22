@@ -15,8 +15,9 @@ from app import (
     SessionItem, Order, OrderStatus, PaymentMethod, OrderItem
 )
 
-# 数据库配置
-DATABASE_URL = "sqlite:///tea_house.db"
+# 数据库配置 - 使用绝对路径
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DATABASE_URL = f"sqlite:///{os.path.join(BASE_DIR, 'tea_house.db')}"
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(bind=engine)
 
