@@ -148,6 +148,23 @@ class OrderItem(Base):
     unit_price = Column(Float, nullable=False)
     subtotal = Column(Float, nullable=False)
 
+class InventoryLogType(str, enum.Enum):
+    IN = "in"  # 入库
+    OUT = "out"  # 出库
+    ADJUST = "adjust"  # 调整
+
+class InventoryLog(Base):
+    __tablename__ = "inventory_logs"
+    id = Column(Integer, primary_key=True, index=True)
+    store_id = Column(Integer, ForeignKey("stores.id"), nullable=False)
+    product_id = Column(Integer, ForeignKey("products.id"), nullable=False)
+    log_type = Column(SQLEnum(InventoryLogType), nullable=False)
+    quantity = Column(Integer, nullable=False)  # 变动数量（正数表示增加，负数表示减少）
+    before_quantity = Column(Integer, nullable=False)  # 变动前的库存量
+    after_quantity = Column(Integer, nullable=False)  # 变动后的库存量
+    remark = Column(String(500))  # 备注
+    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+
 # 创建数据库表
 Base.metadata.create_all(bind=engine)
 
@@ -159,6 +176,14 @@ def init_database():
     """初始化和升级数据库"""
     # 创建所有表（如果不存在）
     Base.metadata.create_all(bind=engine)
+    
+    # 检查是否需要添加新字段或新表
+    inspector = inspect(engine)
+    existing_tables = inspector.get_table_names()
+    
+    # 如果inventory_logs表不存在，创建它
+    if 'inventory_logs' not in existing_tables:
+        InventoryLog.__table__.create(bind=engine)
 
 # 初始化数据库
 init_database()
@@ -357,6 +382,7 @@ page = st.sidebar.radio(
         "⚙️ 设置",
         "💎 会员管理",
         "📝 订单管理",
+        "📦 库存台账",
         "💰 财务报表"
     ],
     label_visibility="collapsed"
@@ -793,8 +819,9 @@ elif page == "🎯 经营":
                                         db.add(order)
                                         db.flush()
 
-                                        # 创建订单明细
+                                        # 创建订单明细并扣减库存
                                         for item in session_items:
+                                            # 创建订单明细
                                             order_item = OrderItem(
                                                 order_id=order.id,
                                                 product_id=item.product_id,
@@ -803,6 +830,29 @@ elif page == "🎯 经营":
                                                 subtotal=item.subtotal
                                             )
                                             db.add(order_item)
+                                            
+                                            # 扣减库存
+                                            inv = db.query(Inventory).filter(
+                                                Inventory.store_id == session.store_id,
+                                                Inventory.product_id == item.product_id
+                                            ).first()
+                                            
+                                            if inv:
+                                                before_quantity = inv.quantity
+                                                inv.quantity -= item.quantity
+                                                after_quantity = inv.quantity
+                                                
+                                                # 记录库存流水
+                                                log = InventoryLog(
+                                                    store_id=session.store_id,
+                                                    product_id=item.product_id,
+                                                    log_type=InventoryLogType.OUT,
+                                                    quantity=-item.quantity,
+                                                    before_quantity=before_quantity,
+                                                    after_quantity=after_quantity,
+                                                    remark=f"订单 {order.order_no} 消耗 {item.quantity} 件"
+                                                )
+                                                db.add(log)
 
                                         db.commit()
                                         st.success(f"✅ 结账成功！订单号: {order.order_no}")
@@ -1033,12 +1083,30 @@ elif page == "⚙️ 设置":
                         sid = st.selectbox("门店", [(s.id, s.name) for s in stores], format_func=lambda x: x[1])
                         pid = st.selectbox("商品", [(p.id, p.name) for p in products], format_func=lambda x: x[1])
                         qty = st.number_input("数量*", min_value=1)
+                        remark = st.text_input("备注（可选）")
                         if st.form_submit_button("入库", type="primary"):
                             inv = db.query(Inventory).filter(Inventory.store_id == sid[0], Inventory.product_id == pid[0]).first()
                             if inv:
+                                before_quantity = inv.quantity
                                 inv.quantity += qty
+                                after_quantity = inv.quantity
                             else:
-                                db.add(Inventory(store_id=sid[0], product_id=pid[0], quantity=qty))
+                                before_quantity = 0
+                                inv = Inventory(store_id=sid[0], product_id=pid[0], quantity=qty)
+                                db.add(inv)
+                                after_quantity = qty
+                            
+                            # 记录库存流水
+                            log = InventoryLog(
+                                store_id=sid[0],
+                                product_id=pid[0],
+                                log_type=InventoryLogType.IN,
+                                quantity=qty,
+                                before_quantity=before_quantity,
+                                after_quantity=after_quantity,
+                                remark=remark or f"手动入库 {qty} 件"
+                            )
+                            db.add(log)
                             db.commit()
                             st.success("✅ 入库成功")
                             st.rerun()
@@ -1097,6 +1165,147 @@ elif page == "📝 订单管理":
         else: 
             st.info("暂无订单")
     finally: 
+        db.close()
+
+# 库存台账
+elif page == "📦 库存台账":
+    st.header("📦 库存台账")
+    db = get_db()
+    try:
+        tab1, tab2 = st.tabs(["库存流水", "库存详情"])
+        
+        with tab1:
+            st.subheader("📋 库存流水记录")
+            
+            # 筛选条件
+            col1, col2, col3, col4 = st.columns(4)
+            with col1:
+                stores = db.query(Store).filter(Store.status == StoreStatus.ACTIVE).all()
+                store_options = [(0, "全部门店")] + [(s.id, s.name) for s in stores]
+                selected_store_id = st.selectbox("门店", store_options, format_func=lambda x: x[1])
+            
+            with col2:
+                log_type_options = [(0, "全部类型"), ("in", "入库"), ("out", "出库"), ("adjust", "调整")]
+                selected_log_type = st.selectbox("类型", log_type_options, format_func=lambda x: x[1])
+            
+            with col3:
+                start_date = st.date_input("开始日期", value=date.today() - timedelta(days=30))
+            
+            with col4:
+                end_date = st.date_input("结束日期", value=date.today())
+            
+            # 查询库存流水
+            query = db.query(InventoryLog).filter(
+                InventoryLog.created_at >= datetime.combine(start_date, datetime.min.time()),
+                InventoryLog.created_at <= datetime.combine(end_date, datetime.max.time())
+            )
+            
+            if selected_store_id[0] != 0:
+                query = query.filter(InventoryLog.store_id == selected_store_id[0])
+            
+            if selected_log_type[0] != 0:
+                query = query.filter(InventoryLog.log_type == selected_log_type[0])
+            
+            logs = query.order_by(InventoryLog.created_at.desc()).all()
+            
+            if logs:
+                # 获取门店和商品信息
+                stores_dict = {s.id: s.name for s in db.query(Store).all()}
+                products_dict = {p.id: f"{p.name} ({p.code})" for p in db.query(Product).all()}
+                
+                # 类型显示映射
+                type_map = {
+                    "in": "入库",
+                    "out": "出库",
+                    "adjust": "调整"
+                }
+                
+                df = pd.DataFrame([{
+                    "ID": log.id,
+                    "门店": stores_dict.get(log.store_id, "未知"),
+                    "商品": products_dict.get(log.product_id, "未知"),
+                    "类型": type_map.get(log.log_type.value, log.log_type.value),
+                    "变动数量": f"+{log.quantity}" if log.quantity > 0 else str(log.quantity),
+                    "变动前": log.before_quantity,
+                    "变动后": log.after_quantity,
+                    "备注": log.remark or "-",
+                    "时间": log.created_at.strftime("%Y-%m-%d %H:%M:%S")
+                } for log in logs])
+                
+                st.dataframe(df, use_container_width=True)
+                
+                # 统计信息
+                st.subheader("📊 统计摘要")
+                col1, col2, col3 = st.columns(3)
+                with col1:
+                    in_count = len([l for l in logs if l.log_type == InventoryLogType.IN])
+                    st.metric("入库次数", in_count)
+                with col2:
+                    out_count = len([l for l in logs if l.log_type == InventoryLogType.OUT])
+                    st.metric("出库次数", out_count)
+                with col3:
+                    total_quantity = sum(abs(l.quantity) for l in logs)
+                    st.metric("总变动数量", total_quantity)
+            else:
+                st.info("暂无库存流水记录")
+        
+        with tab2:
+            st.subheader("🔍 库存详情")
+            
+            # 选择门店
+            stores = db.query(Store).filter(Store.status == StoreStatus.ACTIVE).all()
+            if stores:
+                selected_store_id = st.selectbox(
+                    "选择门店查看库存",
+                    [(s.id, s.name) for s in stores],
+                    format_func=lambda x: x[1]
+                )
+                
+                # 查询该门店的库存
+                inventories = db.query(Inventory).filter(Inventory.store_id == selected_store_id[0]).all()
+                
+                if inventories:
+                    # 获取商品信息
+                    products_dict = {p.id: p for p in db.query(Product).all()}
+                    
+                    df = pd.DataFrame([{
+                        "商品名称": products_dict.get(inv.product_id, {}).name if inv.product_id in products_dict else "未知",
+                        "商品编码": products_dict.get(inv.product_id, {}).code if inv.product_id in products_dict else "未知",
+                        "分类": products_dict.get(inv.product_id, {}).category if inv.product_id in products_dict else "未知",
+                        "当前库存": inv.quantity,
+                        "单价": f"¥{products_dict.get(inv.product_id, {}).unit_price:.2f}" if inv.product_id in products_dict else "-",
+                        "库存价值": f"¥{inv.quantity * products_dict.get(inv.product_id, {}).unit_price:.2f}" if inv.product_id in products_dict else "-"
+                    } for inv in inventories])
+                    
+                    st.dataframe(df, use_container_width=True)
+                    
+                    # 库存统计
+                    total_quantity = sum(inv.quantity for inv in inventories)
+                    total_value = sum(inv.quantity * products_dict.get(inv.product_id, {}).unit_price for inv in inventories if inv.product_id in products_dict)
+                    
+                    col1, col2 = st.columns(2)
+                    with col1:
+                        st.metric("总库存数量", total_quantity)
+                    with col2:
+                        st.metric("总库存价值", f"¥{total_value:,.2f}")
+                    
+                    # 库存预警
+                    st.subheader("⚠️ 库存预警")
+                    low_stock = [inv for inv in inventories if inv.quantity < 10]
+                    if low_stock:
+                        low_stock_df = pd.DataFrame([{
+                            "商品": products_dict.get(inv.product_id, {}).name if inv.product_id in products_dict else "未知",
+                            "当前库存": inv.quantity
+                        } for inv in low_stock])
+                        st.warning(f"发现 {len(low_stock)} 种商品库存不足")
+                        st.dataframe(low_stock_df, use_container_width=True)
+                    else:
+                        st.success("所有商品库存充足")
+                else:
+                    st.info("该门店暂无库存记录")
+            else:
+                st.warning("请先创建门店")
+    finally:
         db.close()
 
 # 财务报表
