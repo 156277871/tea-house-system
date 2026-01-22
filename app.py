@@ -515,54 +515,111 @@ label, [data-testid="stLabel"] {
     background-color: #ffffff !important;
 }
 
-/* 下拉选择框 - 底色白色，字体黑色 */
-.stSelectbox select, 
-.stMultiSelect select,
-.stSelectbox .stSelectbox,
-.stMultiSelect .stMultiSelect {
+/* 下拉选择框 - 增强版选择器，确保底色白色，字体黑色 */
+[data-testid="stSelectbox"] > div > div > div,
+[data-testid="stSelectbox"] > div > div,
+[data-testid="stSelectbox"] > div,
+[data-testid="stSelectbox"],
+.stSelectbox div,
+.stSelectbox,
+[data-testid="stMultiSelect"] > div > div,
+[data-testid="stMultiSelect"] > div,
+[data-testid="stMultiSelect"],
+.stMultiSelect,
+select {
+    color: #1f1f1f !important;
+    background-color: #ffffff !important;
+}
+
+/* 下拉选择框内部的select元素 */
+[data-testid="stSelectbox"] select,
+[data-testid="stMultiSelect"] select,
+.stSelectbox select,
+.stMultiSelect select {
     color: #1f1f1f !important;
     background-color: #ffffff !important;
 }
 
 /* 下拉选择框选项 */
-.stSelectbox option, 
-.stMultiSelect option {
+[data-testid="stSelectbox"] option,
+[data-testid="stMultiSelect"] option,
+.stSelectbox option,
+.stMultiSelect option,
+option {
+    color: #1f1f1f !important;
+    background-color: #ffffff !important;
+}
+
+/* 下拉选择框选中的值显示 */
+[data-testid="stSelectbox"] .stSelectbox .stSelectbox,
+[data-testid="stMultiSelect"] .stMultiSelect {
     color: #1f1f1f !important;
     background-color: #ffffff !important;
 }
 
 /* 日期选择器 */
-.stDateInput input {
+.stDateInput input,
+[data-testid="stDateInput"] input {
     color: #1f1f1f !important;
     background-color: #ffffff !important;
 }
 
 /* ==================== 数据表格样式 ==================== */
-/* 数据表格 - 表体白色，字体黑色 */
-.stDataFrame,
+/* 数据表格容器 */
+[data-testid="stDataFrame"],
+.stDataFrame {
+    background-color: #ffffff !important;
+}
+
+/* 数据表格table元素 */
+[data-testid="stDataFrame"] table,
 .stDataFrame table {
     background-color: #ffffff !important;
+    color: #1f1f1f !important;
 }
 
 /* 数据表格 - 表头浅灰色，字体黑色 */
+[data-testid="stDataFrame"] thead,
+[data-testid="stDataFrame"] thead th,
+[data-testid="stDataFrame"] th,
 .stDataFrame thead,
 .stDataFrame thead th,
-.stDataFrame th {
+.stDataFrame th,
+table thead,
+table thead th,
+table th {
     background-color: #f0f0f0 !important;
     color: #1f1f1f !important;
-    font-weight: bold;
+    font-weight: bold !important;
 }
 
 /* 数据表格 - 表体白色，字体黑色 */
+[data-testid="stDataFrame"] tbody,
+[data-testid="stDataFrame"] tbody tr,
+[data-testid="stDataFrame"] tbody tr td,
+[data-testid="stDataFrame"] td,
+[data-testid="stDataFrame"] tr,
 .stDataFrame tbody,
 .stDataFrame tbody tr,
 .stDataFrame tbody td,
-.stDataFrame td {
+.stDataFrame td,
+.stDataFrame tr,
+table tbody,
+table tbody tr,
+table td {
     background-color: #ffffff !important;
     color: #1f1f1f !important;
 }
 
-/* 数据表格 - 所有元素 */
+/* 数据表格 - 所有元素通用 */
+[data-testid="stDataFrame"], 
+[data-testid="stDataFrame"] table, 
+[data-testid="stDataFrame"] th, 
+[data-testid="stDataFrame"] td,
+[data-testid="stDataFrame"] thead, 
+[data-testid="stDataFrame"] tbody,
+[data-testid="stDataFrame"] tr,
+[data-testid="stDataFrame"] .dataframe,
 .stDataFrame, 
 .stDataFrame table, 
 .stDataFrame th, 
@@ -572,11 +629,41 @@ label, [data-testid="stLabel"] {
 .stDataFrame tr,
 .stDataFrame .dataframe {
     color: #1f1f1f !important;
+    background-color: #ffffff !important;
 }
 
-/* 选中行样式 */
-.stDataFrame tr:hover td {
+/* 选中行样式 - 悬停效果 */
+[data-testid="stDataFrame"] tr:hover td,
+.stDataFrame tr:hover td,
+table tr:hover td {
     background-color: #f8f9fa !important;
+}
+
+/* Pandas DataFrame 特定样式 */
+.dataframe {
+    background-color: #ffffff !important;
+    color: #1f1f1f !important;
+}
+
+.dataframe thead {
+    background-color: #f0f0f0 !important;
+    color: #1f1f1f !important;
+}
+
+.dataframe tbody {
+    background-color: #ffffff !important;
+    color: #1f1f1f !important;
+}
+
+.dataframe th {
+    background-color: #f0f0f0 !important;
+    color: #1f1f1f !important;
+    font-weight: bold !important;
+}
+
+.dataframe td {
+    background-color: #ffffff !important;
+    color: #1f1f1f !important;
 }
 
 /* ==================== 提示信息样式 ==================== */
