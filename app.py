@@ -682,7 +682,7 @@ def style_dataframe(df):
     # 重置索引，避免显示序号列
     df = df.reset_index(drop=True)
     
-    # 使用pandas Styler设置样式
+    # 使用pandas Styler设置样式 - 使用更强制的方式
     styled = df.style.set_properties(
         **{
             'background-color': '#ffffff',
@@ -690,40 +690,53 @@ def style_dataframe(df):
             'border-color': '#dee2e6'
         }
     ).set_table_styles([
-        # 表头样式
+        # 表头样式 - 强制设置
         {'selector': 'thead', 'props': [
-            ('background-color', '#f0f0f0')
+            ('background-color', '#f0f0f0 !important'),
+            ('color', '#000000 !important')
         ]},
         {'selector': 'thead tr', 'props': [
-            ('background-color', '#f0f0f0')
+            ('background-color', '#f0f0f0 !important'),
+            ('color', '#000000 !important')
         ]},
         {'selector': 'thead th', 'props': [
-            ('background-color', '#f0f0f0'),
-            ('color', '#000000'),
-            ('font-weight', 'bold'),
-            ('text-align', 'left')
+            ('background-color', '#f0f0f0 !important'),
+            ('color', '#000000 !important'),
+            ('font-weight', 'bold !important'),
+            ('text-align', 'left !important')
         ]},
         # 表体样式
         {'selector': 'tbody', 'props': [
-            ('background-color', '#ffffff')
+            ('background-color', '#ffffff !important'),
+            ('color', '#000000 !important')
         ]},
         {'selector': 'tbody tr', 'props': [
-            ('background-color', '#ffffff')
+            ('background-color', '#ffffff !important'),
+            ('color', '#000000 !important')
         ]},
         {'selector': 'tbody td', 'props': [
-            ('background-color', '#ffffff'),
-            ('color', '#000000'),
-            ('text-align', 'left')
+            ('background-color', '#ffffff !important'),
+            ('color', '#000000 !important'),
+            ('text-align', 'left !important')
         ]},
-        # 索引列样式（如果有）
+        # 索引列样式
         {'selector': 'th.row_heading', 'props': [
-            ('background-color', '#f0f0f0'),
-            ('color', '#000000'),
-            ('font-weight', 'bold')
+            ('background-color', '#f0f0f0 !important'),
+            ('color', '#000000 !important'),
+            ('font-weight', 'bold !important')
         ]},
         {'selector': 'td.row_heading', 'props': [
-            ('background-color', '#ffffff'),
-            ('color', '#000000')
+            ('background-color', '#ffffff !important'),
+            ('color', '#000000 !important')
+        ]},
+        # 所有th和td强制设置
+        {'selector': 'th', 'props': [
+            ('background-color', '#f0f0f0 !important'),
+            ('color', '#000000 !important')
+        ]},
+        {'selector': 'td', 'props': [
+            ('background-color', '#ffffff !important'),
+            ('color', '#000000 !important')
         ]}
     ])
     
