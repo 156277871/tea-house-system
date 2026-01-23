@@ -581,113 +581,13 @@ label, [data-testid="stLabel"] {
     background-color: #ffffff !important;
 }
 
-/* ==================== 数据表格样式 - 精确控制 + 强制覆盖 ==================== */
-/* Streamlit DataFrame 表格容器 */
+/* ==================== 数据表格样式 - 最简化版 ==================== */
+/* 让Streamlit使用默认的浅色主题 */
 [data-testid="stDataFrame"] {
-    background-color: #ffffff !important;
+    /* 不设置背景色，让Streamlit使用默认主题 */
 }
-
-/* DataFrame 的所有 div 容器 */
-[data-testid="stDataFrame"] > div,
-[data-testid="stDataFrame"] > div > div {
-    background-color: #ffffff !important;
-}
-
-/* DataFrame 内的 dataframe 类 */
-[data-testid="stDataFrame"] .dataframe {
-    background-color: #ffffff !important;
-}
-
-/* ========== 表格元素 ========== */
-[data-testid="stDataFrame"] table {
-    background-color: #ffffff !important;
-    border-collapse: collapse !important;
-    border: 1px solid #dee2e6 !important;
-    margin: 0 !important;
-    padding: 0 !important;
-}
-
-/* ========== 表头样式 - 浅灰色背景 ========== */
-[data-testid="stDataFrame"] thead {
-    background-color: #f0f0f0 !important;
-}
-
-[data-testid="stDataFrame"] thead tr {
-    background-color: #f0f0f0 !important;
-}
-
-[data-testid="stDataFrame"] thead th {
-    background-color: #f0f0f0 !important;
-    color: #1f1f1f !important;
-    font-weight: bold !important;
-    border: 1px solid #dee2e6 !important;
-    padding: 8px !important;
-    text-align: left !important;
-}
-
-/* ========== 表体样式 - 白色背景 ========== */
-[data-testid="stDataFrame"] tbody {
-    background-color: #ffffff !important;
-}
-
-[data-testid="stDataFrame"] tbody tr {
-    background-color: #ffffff !important;
-}
-
-[data-testid="stDataFrame"] tbody td {
-    background-color: #ffffff !important;
-    color: #1f1f1f !important;
-    border: 1px solid #dee2e6 !important;
-    padding: 8px !important;
-}
-
-/* ========== 表格文字颜色 ========== */
-[data-testid="stDataFrame"] table th,
-[data-testid="stDataFrame"] table td,
-[data-testid="stDataFrame"] table span,
-[data-testid="stDataFrame"] table div {
-    color: #1f1f1f !important;
-    background-color: transparent !important;
-}
-
-/* ========== 悬停效果 ========== */
-[data-testid="stDataFrame"] tbody tr:hover {
-    background-color: #f8f9fa !important;
-}
-
-[data-testid="stDataFrame"] tbody tr:hover td {
-    background-color: #f8f9fa !important;
-}
-
-/* ========== 强制覆盖所有可能的背景 ========== */
-[data-testid="stDataFrame"] [class*="dataframe"],
-[data-testid="stDataFrame"] [class*="Dataframe"],
-[data-testid="stDataFrame"] .dataframe-container {
-    background-color: #ffffff !important;
-}
-
-/* ========== 表格内的所有元素背景强制透明或白色 ========== */
-[data-testid="stDataFrame"] table tr,
-[data-testid="stDataFrame"] table th,
-[data-testid="stDataFrame"] table td,
-[data-testid="stDataFrame"] thead,
-[data-testid="stDataFrame"] tbody {
-    background-color: inherit !important;
-}
-
-/* 表头背景强制设置为浅灰色 */
-[data-testid="stDataFrame"] table thead,
-[data-testid="stDataFrame"] table thead tr,
-[data-testid="stDataFrame"] table thead th {
-    background-color: #f0f0f0 !important;
-}
-
-/* 表体背景强制设置为白色 */
-[data-testid="stDataFrame"] table tbody,
-[data-testid="stDataFrame"] table tbody tr,
-[data-testid="stDataFrame"] table tbody td {
-    background-color: #ffffff !important;
-}
+</style>
+""", unsafe_allow_html=True)
 
 /* ==================== 提示信息样式 ==================== */
 /* 成功、信息、警告、错误提示 */
@@ -723,214 +623,10 @@ label, [data-testid="stLabel"] {
 }
 </style>
 
-<script>
-// JavaScript: 强制设置表格背景色
-(function() {
-    function forceTableStyles() {
-        const dataframes = document.querySelectorAll('[data-testid="stDataFrame"]');
-        dataframes.forEach(df => {
-            // 设置容器背景
-            df.style.backgroundColor = '#ffffff';
-            
-            // 设置所有子div背景
-            const divs = df.querySelectorAll('div');
-            divs.forEach(div => {
-                div.style.backgroundColor = '#ffffff';
-            });
-            
-            // 设置表格背景
-            const tables = df.querySelectorAll('table');
-            tables.forEach(table => {
-                table.style.backgroundColor = '#ffffff';
-                
-                // 表头 - 浅灰色
-                const theads = table.querySelectorAll('thead');
-                theads.forEach(thead => {
-                    thead.style.backgroundColor = '#f0f0f0';
-                    const ths = thead.querySelectorAll('th');
-                    ths.forEach(th => {
-                        th.style.backgroundColor = '#f0f0f0';
-                        th.style.color = '#1f1f1f';
-                    });
-                });
-                
-                // 表体 - 白色
-                const tbodies = table.querySelectorAll('tbody');
-                tbodies.forEach(tbody => {
-                    tbody.style.backgroundColor = '#ffffff';
-                    const trs = tbody.querySelectorAll('tr');
-                    trs.forEach(tr => {
-                        tr.style.backgroundColor = '#ffffff';
-                        const tds = tr.querySelectorAll('td');
-                        tds.forEach(td => {
-                            td.style.backgroundColor = '#ffffff';
-                            td.style.color = '#1f1f1f';
-                        });
-                    });
-                });
-            });
-        });
-    }
-    
-    // 页面加载时执行
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', forceTableStyles);
-    } else {
-        forceTableStyles();
-    }
-    
-    // 定时执行，处理动态加载的表格
-    setInterval(forceTableStyles, 1000);
-    
-    // Streamlit rerun时也会执行
-    window.addEventListener('st:rerun', forceTableStyles);
-})();
-</script>
 
 <style>
-<script>
-// JavaScript: 强制设置表格背景色
-(function() {
-    function forceTableStyles() {
-        const dataframes = document.querySelectorAll('[data-testid="stDataFrame"]');
-        dataframes.forEach(df => {
-            // 设置容器背景
-            df.style.backgroundColor = '#ffffff';
-            
-            // 设置所有子div背景
-            const divs = df.querySelectorAll('div');
-            divs.forEach(div => {
-                div.style.backgroundColor = '#ffffff';
-            });
-            
-            // 设置表格背景
-            const tables = df.querySelectorAll('table');
-            tables.forEach(table => {
-                table.style.backgroundColor = '#ffffff';
-                
-                // 表头 - 浅灰色
-                const theads = table.querySelectorAll('thead');
-                theads.forEach(thead => {
-                    thead.style.backgroundColor = '#f0f0f0';
-                    const ths = thead.querySelectorAll('th');
-                    ths.forEach(th => {
-                        th.style.backgroundColor = '#f0f0f0';
-                        th.style.color = '#1f1f1f';
-                    });
-                });
-                
-                // 表体 - 白色
-                const tbodies = table.querySelectorAll('tbody');
-                tbodies.forEach(tbody => {
-                    tbody.style.backgroundColor = '#ffffff';
-                    const trs = tbody.querySelectorAll('tr');
-                    trs.forEach(tr => {
-                        tr.style.backgroundColor = '#ffffff';
-                        const tds = tr.querySelectorAll('td');
-                        tds.forEach(td => {
-                            td.style.backgroundColor = '#ffffff';
-                            td.style.color = '#1f1f1f';
-                        });
-                    });
-                });
-                
-                // 强制覆盖所有元素
-                table.querySelectorAll('*').forEach(el => {
-                    // 如果是表头元素，设置浅灰色
-                    if (el.tagName === 'TH') {
-                        el.style.backgroundColor = '#f0f0f0';
-                        el.style.color = '#1f1f1f';
-                    } else {
-                        el.style.backgroundColor = '#ffffff';
-                        el.style.color = '#1f1f1f';
-                    }
-                });
-            });
-        });
-    }
-    
-    // 页面加载时执行
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', forceTableStyles);
-    } else {
-        forceTableStyles();
-    }
-    
-    // 定时执行，处理动态加载的表格
-    setInterval(forceTableStyles, 1000);
-    
-    // Streamlit rerun时也会执行
-    window.addEventListener('st:rerun', forceTableStyles);
-})();
-</script>
 
 <style>
-/* 再次覆盖，确保样式生效 - 超级强化版 */
-[data-testid="stDataFrame"] {
-    background-color: #ffffff !important;
-}
-
-/* 所有表格元素 - 表体白色，字体黑色 */
-[data-testid="stDataFrame"] table,
-[data-testid="stDataFrame"] tbody,
-[data-testid="stDataFrame"] tbody tr,
-[data-testid="stDataFrame"] tbody td {
-    background-color: #ffffff !important;
-    color: #1f1f1f !important;
-}
-
-/* 表头 - 浅灰色，字体黑色 */
-[data-testid="stDataFrame"] thead,
-[data-testid="stDataFrame"] thead tr,
-[data-testid="stDataFrame"] thead th {
-    background-color: #f0f0f0 !important;
-    color: #1f1f1f !important;
-    font-weight: bold !important;
-}
-
-/* 索引列 - 特殊处理 */
-[data-testid="stDataFrame"] th:first-child,
-[data-testid="stDataFrame"] td:first-child,
-[data-testid="stDataFrame"] th:nth-child(1),
-[data-testid="stDataFrame"] td:nth-child(1) {
-    background-color: inherit !important;
-    color: #1f1f1f !important;
-}
-
-/* 表头的第一个元素（可能是索引列表头） */
-[data-testid="stDataFrame"] thead th:first-child {
-    background-color: #f0f0f0 !important;
-    color: #1f1f1f !important;
-}
-
-/* 表体的第一个元素（可能是索引列） */
-[data-testid="stDataFrame"] tbody td:first-child {
-    background-color: #ffffff !important;
-    color: #1f1f1f !important;
-}
-
-/* 强制所有表格元素 */
-[data-testid="stDataFrame"] table th,
-[data-testid="stDataFrame"] table td {
-    color: #1f1f1f !important;
-}
-
-[data-testid="stDataFrame"] table th {
-    background-color: #f0f0f0 !important;
-}
-
-[data-testid="stDataFrame"] table td {
-    background-color: #ffffff !important;
-}
-
-/* 最后的保险措施 - 强制所有元素 */
-[data-testid="stDataFrame"] *:not(th):not(thead *) {
-    background-color: #ffffff !important;
-}
-[data-testid="stDataFrame"] thead * {
-    background-color: #f0f0f0 !important;
-}
-</style>
 """, unsafe_allow_html=True)
 
 st.sidebar.title("🏪 连锁茶楼管理系统")
@@ -949,79 +645,17 @@ page = st.sidebar.radio(
     label_visibility="collapsed"
 )
 
-# 辅助函数：设置表格样式
+# 辅助函数：设置表格样式（简化版）
 def style_dataframe(df):
-    """设置DataFrame样式：表头浅灰色，表体白色"""
-    # 重置索引，避免显示序号列
-    df = df.reset_index(drop=True)
-    
-    # 设置样式
-    return df.style.set_properties(
-        **{
-            'background-color': '#ffffff', 
-            'color': '#1f1f1f',
-            'border-color': '#dee2e6'
-        }
-    ).set_table_styles([
-        # 表头样式 - 浅灰色背景，黑色字体，粗体
-        {'selector': 'thead th', 'props': [
-            ('background-color', '#f0f0f0 !important'),
-            ('color', '#1f1f1f !important'),
-            ('font-weight', 'bold !important'),
-            ('border', '1px solid #dee2e6 !important')
-        ]},
-        # 表头行样式
-        {'selector': 'thead tr', 'props': [
-            ('background-color', '#f0f0f0 !important')
-        ]},
-        # 表体单元格样式 - 白色背景，黑色字体
-        {'selector': 'tbody td', 'props': [
-            ('background-color', '#ffffff !important'),
-            ('color', '#1f1f1f !important'),
-            ('border', '1px solid #dee2e6 !important')
-        ]},
-        # 表体行样式
-        {'selector': 'tbody tr', 'props': [
-            ('background-color', '#ffffff !important')
-        ]},
-        # 悬停效果
-        {'selector': 'tbody tr:hover td', 'props': [
-            ('background-color', '#f8f9fa !important')
-        ]},
-        # 索引列样式（如果有）
-        {'selector': 'th.row_heading', 'props': [
-            ('background-color', '#f0f0f0 !important'),
-            ('color', '#1f1f1f !important'),
-            ('font-weight', 'bold !important')
-        ]},
-        {'selector': 'td.row_heading', 'props': [
-            ('background-color', '#ffffff !important'),
-            ('color', '#1f1f1f !important')
-        ]}
-    ]).set_properties(
-        subset=pd.IndexSlice[:],
-        **{
-            'text-align': 'left',
-            'padding': '8px'
-        }
-    )
+    """设置DataFrame样式：表头浅灰色，表体白色 - 简化版"""
+    # 不使用Styler，直接返回原始DataFrame
+    return df
 
 # 包装st.dataframe，自动应用样式
 def st_df(data, **kwargs):
-    """包装st.dataframe，自动应用样式"""
-    if 'hide_index' not in kwargs or not kwargs['hide_index']:
-        # 如果有data参数，转换为DataFrame并应用样式
-        if isinstance(data, pd.DataFrame):
-            styled_data = style_dataframe(data)
-            return st.dataframe(styled_data, **kwargs)
-        else:
-            # 如果是dict列表等，先转换为DataFrame
-            df = pd.DataFrame(data)
-            styled_data = style_dataframe(df)
-            return st.dataframe(styled_data, **kwargs)
-    else:
-        # hide_index=True的情况，暂时不应用样式（因为selection_mode可能有问题）
-        return st.dataframe(data, **kwargs)
+    """包装st.dataframe - 简化版，不应用样式"""
+    # 直接返回原始的st.dataframe，不应用任何样式
+    return st.dataframe(data, **kwargs)
 
 # 辅助函数
 def format_duration(minutes):
