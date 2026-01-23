@@ -831,13 +831,59 @@ page = st.sidebar.radio(
 # 辅助函数：设置表格样式
 def style_dataframe(df):
     """设置DataFrame样式：表头浅灰色，表体白色"""
+    # 重置索引，避免显示序号列
+    df = df.reset_index(drop=True)
+    
+    # 设置样式
     return df.style.set_properties(
-        **{'background-color': '#ffffff', 'color': '#1f1f1f'}
+        **{
+            'background-color': '#ffffff', 
+            'color': '#1f1f1f',
+            'border-color': '#dee2e6'
+        }
     ).set_table_styles([
-        {'selector': 'thead th', 'props': [('background-color', '#f0f0f0'), ('color', '#1f1f1f'), ('font-weight', 'bold')]},
-        {'selector': 'tbody td', 'props': [('background-color', '#ffffff'), ('color', '#1f1f1f')]},
-        {'selector': 'tbody tr:hover td', 'props': [('background-color', '#f8f9fa')]}
-    ])
+        # 表头样式 - 浅灰色背景，黑色字体，粗体
+        {'selector': 'thead th', 'props': [
+            ('background-color', '#f0f0f0 !important'),
+            ('color', '#1f1f1f !important'),
+            ('font-weight', 'bold !important'),
+            ('border', '1px solid #dee2e6 !important')
+        ]},
+        # 表头行样式
+        {'selector': 'thead tr', 'props': [
+            ('background-color', '#f0f0f0 !important')
+        ]},
+        # 表体单元格样式 - 白色背景，黑色字体
+        {'selector': 'tbody td', 'props': [
+            ('background-color', '#ffffff !important'),
+            ('color', '#1f1f1f !important'),
+            ('border', '1px solid #dee2e6 !important')
+        ]},
+        # 表体行样式
+        {'selector': 'tbody tr', 'props': [
+            ('background-color', '#ffffff !important')
+        ]},
+        # 悬停效果
+        {'selector': 'tbody tr:hover td', 'props': [
+            ('background-color', '#f8f9fa !important')
+        ]},
+        # 索引列样式（如果有）
+        {'selector': 'th.row_heading', 'props': [
+            ('background-color', '#f0f0f0 !important'),
+            ('color', '#1f1f1f !important'),
+            ('font-weight', 'bold !important')
+        ]},
+        {'selector': 'td.row_heading', 'props': [
+            ('background-color', '#ffffff !important'),
+            ('color', '#1f1f1f !important')
+        ]}
+    ]).set_properties(
+        subset=pd.IndexSlice[:],
+        **{
+            'text-align': 'left',
+            'padding': '8px'
+        }
+    )
 
 # 包装st.dataframe，自动应用样式
 def st_df(data, **kwargs):
