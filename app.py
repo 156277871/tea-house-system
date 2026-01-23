@@ -679,14 +679,42 @@ page = st.sidebar.radio(
 # 辅助函数：设置表格样式（简化版）
 def style_dataframe(df):
     """Set DataFrame style: header light gray, body white - simplified version"""
-    # 不使用Styler，直接返回原始DataFrame
-    return df
+    # 重置索引，避免显示序号列
+    df = df.reset_index(drop=True)
+    
+    # 使用pandas Styler设置样式
+    styled = df.style.set_properties(
+        **{
+            'background-color': '#ffffff',
+            'color': '#000000',
+            'border-color': '#dee2e6'
+        }
+    ).set_table_styles([
+        {'selector': 'thead th', 'props': [
+            ('background-color', '#f0f0f0'),
+            ('color', '#000000'),
+            ('font-weight', 'bold')
+        ]},
+        {'selector': 'tbody td', 'props': [
+            ('background-color', '#ffffff'),
+            ('color', '#000000')
+        ]}
+    ])
+    
+    return styled
 
 # 包装st.dataframe，自动应用样式
 def st_df(data, **kwargs):
-    """Wrap st.dataframe - simplified version, no styling"""
-    # 直接返回原始的st.dataframe，不应用任何样式
-    return st.dataframe(data, **kwargs)
+    """Wrap st.dataframe - apply pandas styler"""
+    # 如果是DataFrame，使用Styler设置样式
+    if isinstance(data, pd.DataFrame):
+        styled_data = style_dataframe(data)
+        return st.dataframe(styled_data, **kwargs)
+    else:
+        # 如果是dict列表等，先转换为DataFrame
+        df = pd.DataFrame(data)
+        styled_data = style_dataframe(df)
+        return st.dataframe(styled_data, **kwargs)
 
 # 辅助函数
 def format_duration(minutes):
