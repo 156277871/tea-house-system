@@ -828,6 +828,34 @@ page = st.sidebar.radio(
     label_visibility="collapsed"
 )
 
+# 辅助函数：设置表格样式
+def style_dataframe(df):
+    """设置DataFrame样式：表头浅灰色，表体白色"""
+    return df.style.set_properties(
+        **{'background-color': '#ffffff', 'color': '#1f1f1f'}
+    ).set_table_styles([
+        {'selector': 'thead th', 'props': [('background-color', '#f0f0f0'), ('color', '#1f1f1f'), ('font-weight', 'bold')]},
+        {'selector': 'tbody td', 'props': [('background-color', '#ffffff'), ('color', '#1f1f1f')]},
+        {'selector': 'tbody tr:hover td', 'props': [('background-color', '#f8f9fa')]}
+    ])
+
+# 包装st.dataframe，自动应用样式
+def st_df(data, **kwargs):
+    """包装st.dataframe，自动应用样式"""
+    if 'hide_index' not in kwargs or not kwargs['hide_index']:
+        # 如果有data参数，转换为DataFrame并应用样式
+        if isinstance(data, pd.DataFrame):
+            styled_data = style_dataframe(data)
+            return st.dataframe(styled_data, **kwargs)
+        else:
+            # 如果是dict列表等，先转换为DataFrame
+            df = pd.DataFrame(data)
+            styled_data = style_dataframe(df)
+            return st.dataframe(styled_data, **kwargs)
+    else:
+        # hide_index=True的情况，暂时不应用样式（因为selection_mode可能有问题）
+        return st.dataframe(data, **kwargs)
+
 # 辅助函数
 def format_duration(minutes):
     """格式化时长"""
@@ -909,7 +937,7 @@ if page == "📊 控制台":
                 })
             
             df = pd.DataFrame(session_data)
-            st.dataframe(df, use_container_width=True)
+            st_df(df, use_container_width=True)
         else:
             st.info("暂无进行中的台位")
         
@@ -917,12 +945,11 @@ if page == "📊 控制台":
         st.subheader("📝 最近订单")
         recent = db.query(Order).order_by(Order.created_at.desc()).limit(5).all()
         if recent:
-            df = pd.DataFrame([{
+            st_df([{
                 "订单号": o.order_no,
                 "金额": f"¥{o.total_amount:.2f}",
                 "时间": o.created_at.strftime("%H:%M")
-            } for o in recent])
-            st.dataframe(df, use_container_width=True)
+            } for o in recent], use_container_width=True)
     finally: 
         db.close()
 
@@ -1188,7 +1215,7 @@ elif page == "🎯 经营":
                                         "小计": f"¥{item.subtotal:.2f}"
                                     })
                                 df = pd.DataFrame(item_data)
-                                st.dataframe(df, use_container_width=True)
+                                st_df(df, use_container_width=True)
                             else:
                                 st.info("暂未点单")
 
@@ -1331,7 +1358,7 @@ elif page == "⚙️ 设置":
             with col1:
                 stores = db.query(Store).all()
                 if stores:
-                    st.dataframe(pd.DataFrame([{
+                    st_df(pd.DataFrame([{
                         "名称": s.name,
                         "编码": s.code,
                         "地址": s.address or "-",
@@ -1374,7 +1401,7 @@ elif page == "⚙️ 设置":
                     
                     tables = db.query(Table).filter(Table.store_id == selected_store_id[0]).all()
                     if tables:
-                        st.dataframe(pd.DataFrame([{
+                        st_df(pd.DataFrame([{
                             "名称": t.name,
                             "编码": t.code,
                             "容量": f"{t.capacity}人",
@@ -1431,7 +1458,7 @@ elif page == "⚙️ 设置":
                             "职位": e.position.value,
                             "所属门店": store.name if store else "未分配"
                         })
-                    st.dataframe(pd.DataFrame(emp_data), use_container_width=True)
+                    st_df(pd.DataFrame(emp_data), use_container_width=True)
                 else: 
                     st.info("暂无员工")
             
@@ -1465,7 +1492,7 @@ elif page == "⚙️ 设置":
             with col1:
                 products = db.query(Product).all()
                 if products:
-                    st.dataframe(pd.DataFrame([{
+                    st_df(pd.DataFrame([{
                         "名称": p.name,
                         "编码": p.code,
                         "分类": p.category,
@@ -1508,7 +1535,7 @@ elif page == "⚙️ 设置":
                         for inv in invs:
                             p = db.query(Product).get(inv.product_id)
                             data.append({"商品": p.name, "数量": inv.quantity})
-                        st.dataframe(pd.DataFrame(data), use_container_width=True)
+                        st_df(pd.DataFrame(data), use_container_width=True)
                     else: 
                         st.info("暂无库存")
                 else:
@@ -1565,7 +1592,7 @@ elif page == "💎 会员管理":
         with tab1:
             members = db.query(Member).all()
             if members:
-                st.dataframe(pd.DataFrame([{
+                st_df(pd.DataFrame([{
                     "姓名": m.name,
                     "电话": m.phone,
                     "等级": m.level.value,
@@ -1596,7 +1623,7 @@ elif page == "📝 订单管理":
     try:
         orders = db.query(Order).order_by(Order.created_at.desc()).limit(50).all()
         if orders:
-            st.dataframe(pd.DataFrame([{
+            st_df(pd.DataFrame([{
                 "订单号": o.order_no,
                 "金额": f"¥{o.total_amount:.2f}",
                 "状态": o.status.value,
@@ -1675,7 +1702,7 @@ elif page == "📦 库存台账":
                 } for log in logs])
                 
                 # 显示表格（支持行选择）
-                event = st.dataframe(df, use_container_width=True, hide_index=True, on_select="rerun", selection_mode="single-row")
+                event = st_df(df, use_container_width=True, hide_index=True, on_select="rerun", selection_mode="single-row")
                 
                 # 显示选中行的详情
                 if event.selection['rows']:
@@ -1775,7 +1802,7 @@ elif page == "📦 库存台账":
                     } for inv in inventories])
                     
                     # 显示表格（支持行选择）
-                    event = st.dataframe(df, use_container_width=True, hide_index=True, on_select="rerun", selection_mode="single-row")
+                    event = st_df(df, use_container_width=True, hide_index=True, on_select="rerun", selection_mode="single-row")
                     
                     # 显示选中行的详情
                     if event.selection['rows']:
@@ -1813,7 +1840,7 @@ elif page == "📦 库存台账":
                                     "备注": log.remark or "-",
                                     "时间": log.created_at.strftime("%Y-%m-%d %H:%M:%S")
                                 } for log in inventory_logs])
-                                st.dataframe(logs_df, use_container_width=True, hide_index=True)
+                                st_df(logs_df, use_container_width=True, hide_index=True)
                             else:
                                 st.info("暂无库存流水记录")
                     
@@ -1838,7 +1865,7 @@ elif page == "📦 库存台账":
                             "当前库存": inv.quantity
                         } for inv in low_stock])
                         st.warning(f"发现 {len(low_stock)} 种商品库存不足")
-                        st.dataframe(low_stock_df, use_container_width=True)
+                        st_df(low_stock_df, use_container_width=True)
                     else:
                         st.success("所有商品库存充足")
                 else:
@@ -1882,7 +1909,7 @@ elif page == "💰 财务报表":
                 } for o in orders])
                 
                 df_grouped = df.groupby("日期").sum().reset_index()
-                st.dataframe(df_grouped, use_container_width=True)
+                st_df(df_grouped, use_container_width=True)
         
         with tab2:
             st.subheader("🪑 台位统计")
@@ -1912,6 +1939,6 @@ elif page == "💰 财务报表":
                         "开台次数": session_count
                     })
                 df = pd.DataFrame(table_stats)
-                st.dataframe(df, use_container_width=True)
+                st_df(df, use_container_width=True)
     finally: 
         db.close()
