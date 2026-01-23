@@ -621,33 +621,6 @@ label, [data-testid="stLabel"] {
 }
 </style>
 """, unsafe_allow_html=True)
-}
-
-/* Streamlit 提示容器 */
-[data-testid="stInfoContainer"],
-[data-testid="stSuccessContainer"],
-[data-testid="stWarningContainer"],
-[data-testid="stErrorContainer"] {
-    color: #1f1f1f !important;
-}
-
-[data-testid="stInfoContainer"] *,
-[data-testid="stSuccessContainer"] *,
-[data-testid="stWarningContainer"] *,
-[data-testid="stErrorContainer"] * {
-    color: #1f1f1f !important;
-}
-
-/* ==================== Metric 指标样式 ==================== */
-[data-testid="stMetricValue"],
-[data-testid="stMetricLabel"],
-[data-testid="stMetricDelta"] {
-    color: #1f1f1f !important;
-}
-</style>
-
-
-<style>
 
 <style>
 """, unsafe_allow_html=True)
