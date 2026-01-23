@@ -581,37 +581,41 @@ label, [data-testid="stLabel"] {
     background-color: #ffffff !important;
 }
 
-/* ==================== 数据表格样式 - 精确控制 ==================== */
-/* Streamlit DataFrame 表格样式 */
+/* ==================== 数据表格样式 - 精确控制 + 强制覆盖 ==================== */
+/* Streamlit DataFrame 表格容器 */
 [data-testid="stDataFrame"] {
-    background-color: transparent !important;
+    background-color: #ffffff !important;
 }
 
-/* 表格容器 */
+/* DataFrame 的所有 div 容器 */
 [data-testid="stDataFrame"] > div,
+[data-testid="stDataFrame"] > div > div {
+    background-color: #ffffff !important;
+}
+
+/* DataFrame 内的 dataframe 类 */
 [data-testid="stDataFrame"] .dataframe {
     background-color: #ffffff !important;
 }
 
-/* 表格元素 */
+/* ========== 表格元素 ========== */
 [data-testid="stDataFrame"] table {
     background-color: #ffffff !important;
     border-collapse: collapse !important;
     border: 1px solid #dee2e6 !important;
+    margin: 0 !important;
+    padding: 0 !important;
 }
 
-/* ========== 表头样式 ========== */
-/* 表头容器 */
+/* ========== 表头样式 - 浅灰色背景 ========== */
 [data-testid="stDataFrame"] thead {
     background-color: #f0f0f0 !important;
 }
 
-/* 表头行 */
 [data-testid="stDataFrame"] thead tr {
     background-color: #f0f0f0 !important;
 }
 
-/* 表头单元格 */
 [data-testid="stDataFrame"] thead th {
     background-color: #f0f0f0 !important;
     color: #1f1f1f !important;
@@ -621,19 +625,15 @@ label, [data-testid="stLabel"] {
     text-align: left !important;
 }
 
-/* ========== 表体样式 ========== */
-/* 表体容器 */
+/* ========== 表体样式 - 白色背景 ========== */
 [data-testid="stDataFrame"] tbody {
     background-color: #ffffff !important;
 }
 
-/* 表体行 */
 [data-testid="stDataFrame"] tbody tr {
     background-color: #ffffff !important;
-    color: #1f1f1f !important;
 }
 
-/* 表体单元格 */
 [data-testid="stDataFrame"] tbody td {
     background-color: #ffffff !important;
     color: #1f1f1f !important;
@@ -641,19 +641,52 @@ label, [data-testid="stLabel"] {
     padding: 8px !important;
 }
 
-/* 表格内所有文字 */
+/* ========== 表格文字颜色 ========== */
 [data-testid="stDataFrame"] table th,
-[data-testid="stDataFrame"] table td {
+[data-testid="stDataFrame"] table td,
+[data-testid="stDataFrame"] table span,
+[data-testid="stDataFrame"] table div {
     color: #1f1f1f !important;
+    background-color: transparent !important;
 }
 
-/* 悬停效果 */
+/* ========== 悬停效果 ========== */
 [data-testid="stDataFrame"] tbody tr:hover {
     background-color: #f8f9fa !important;
 }
 
 [data-testid="stDataFrame"] tbody tr:hover td {
     background-color: #f8f9fa !important;
+}
+
+/* ========== 强制覆盖所有可能的背景 ========== */
+[data-testid="stDataFrame"] [class*="dataframe"],
+[data-testid="stDataFrame"] [class*="Dataframe"],
+[data-testid="stDataFrame"] .dataframe-container {
+    background-color: #ffffff !important;
+}
+
+/* ========== 表格内的所有元素背景强制透明或白色 ========== */
+[data-testid="stDataFrame"] table tr,
+[data-testid="stDataFrame"] table th,
+[data-testid="stDataFrame"] table td,
+[data-testid="stDataFrame"] thead,
+[data-testid="stDataFrame"] tbody {
+    background-color: inherit !important;
+}
+
+/* 表头背景强制设置为浅灰色 */
+[data-testid="stDataFrame"] table thead,
+[data-testid="stDataFrame"] table thead tr,
+[data-testid="stDataFrame"] table thead th {
+    background-color: #f0f0f0 !important;
+}
+
+/* 表体背景强制设置为白色 */
+[data-testid="stDataFrame"] table tbody,
+[data-testid="stDataFrame"] table tbody tr,
+[data-testid="stDataFrame"] table tbody td {
+    background-color: #ffffff !important;
 }
 
 /* ==================== 提示信息样式 ==================== */
@@ -686,6 +719,94 @@ label, [data-testid="stLabel"] {
 [data-testid="stMetricValue"],
 [data-testid="stMetricLabel"],
 [data-testid="stMetricDelta"] {
+    color: #1f1f1f !important;
+}
+</style>
+
+<script>
+// JavaScript: 强制设置表格背景色
+(function() {
+    function forceTableStyles() {
+        const dataframes = document.querySelectorAll('[data-testid="stDataFrame"]');
+        dataframes.forEach(df => {
+            // 设置容器背景
+            df.style.backgroundColor = '#ffffff';
+            
+            // 设置所有子div背景
+            const divs = df.querySelectorAll('div');
+            divs.forEach(div => {
+                div.style.backgroundColor = '#ffffff';
+            });
+            
+            // 设置表格背景
+            const tables = df.querySelectorAll('table');
+            tables.forEach(table => {
+                table.style.backgroundColor = '#ffffff';
+                
+                // 表头 - 浅灰色
+                const theads = table.querySelectorAll('thead');
+                theads.forEach(thead => {
+                    thead.style.backgroundColor = '#f0f0f0';
+                    const ths = thead.querySelectorAll('th');
+                    ths.forEach(th => {
+                        th.style.backgroundColor = '#f0f0f0';
+                        th.style.color = '#1f1f1f';
+                    });
+                });
+                
+                // 表体 - 白色
+                const tbodies = table.querySelectorAll('tbody');
+                tbodies.forEach(tbody => {
+                    tbody.style.backgroundColor = '#ffffff';
+                    const trs = tbody.querySelectorAll('tr');
+                    trs.forEach(tr => {
+                        tr.style.backgroundColor = '#ffffff';
+                        const tds = tr.querySelectorAll('td');
+                        tds.forEach(td => {
+                            td.style.backgroundColor = '#ffffff';
+                            td.style.color = '#1f1f1f';
+                        });
+                    });
+                });
+            });
+        });
+    }
+    
+    // 页面加载时执行
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', forceTableStyles);
+    } else {
+        forceTableStyles();
+    }
+    
+    // 定时执行，处理动态加载的表格
+    setInterval(forceTableStyles, 1000);
+    
+    // Streamlit rerun时也会执行
+    window.addEventListener('st:rerun', forceTableStyles);
+})();
+</script>
+
+<style>
+/* 再次覆盖，确保样式生效 */
+[data-testid="stDataFrame"] {
+    background-color: #ffffff !important;
+}
+[data-testid="stDataFrame"] table {
+    background-color: #ffffff !important;
+}
+[data-testid="stDataFrame"] thead {
+    background-color: #f0f0f0 !important;
+}
+[data-testid="stDataFrame"] thead th {
+    background-color: #f0f0f0 !important;
+    color: #1f1f1f !important;
+}
+[data-testid="stDataFrame"] tbody {
+    background-color: #ffffff !important;
+}
+[data-testid="stDataFrame"] tbody td {
+    background-color: #ffffff !important;
     color: #1f1f1f !important;
 }
 </style>
