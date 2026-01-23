@@ -581,10 +581,48 @@ label, [data-testid="stLabel"] {
     background-color: #ffffff !important;
 }
 
-/* ==================== 数据表格样式 - 最简化版 ==================== */
-/* 让Streamlit使用默认的浅色主题 */
+/* ==================== 数据表格样式 - 强制设置浅色 ==================== */
+/* 强制所有表格元素使用浅色主题 */
 [data-testid="stDataFrame"] {
-    /* 不设置背景色，让Streamlit使用默认主题 */
+    background-color: #ffffff !important;
+}
+
+[data-testid="stDataFrame"] table {
+    background-color: #ffffff !important;
+}
+
+/* 表头 - 浅灰色背景，黑色字体 */
+[data-testid="stDataFrame"] thead {
+    background-color: #f0f0f0 !important;
+}
+
+[data-testid="stDataFrame"] thead th {
+    background-color: #f0f0f0 !important;
+    color: #000000 !important;
+    font-weight: bold !important;
+}
+
+/* 表体 - 白色背景，黑色字体 */
+[data-testid="stDataFrame"] tbody {
+    background-color: #ffffff !important;
+}
+
+[data-testid="stDataFrame"] tbody td {
+    background-color: #ffffff !important;
+    color: #000000 !important;
+}
+
+/* 所有表格行 */
+[data-testid="stDataFrame"] tr {
+    background-color: #ffffff !important;
+}
+
+[data-testid="stDataFrame"] td {
+    color: #000000 !important;
+}
+
+[data-testid="stDataFrame"] th {
+    color: #000000 !important;
 }
 
 /* ==================== 提示信息样式 ==================== */
