@@ -622,9 +622,6 @@ label, [data-testid="stLabel"] {
 </style>
 """, unsafe_allow_html=True)
 
-<style>
-""", unsafe_allow_html=True)
-
 st.sidebar.title("🏪 连锁茶楼管理系统")
 
 page = st.sidebar.radio(
@@ -643,19 +640,19 @@ page = st.sidebar.radio(
 
 # 辅助函数：设置表格样式（简化版）
 def style_dataframe(df):
-    """设置DataFrame样式：表头浅灰色，表体白色 - 简化版"""
+    """Set DataFrame style: header light gray, body white - simplified version"""
     # 不使用Styler，直接返回原始DataFrame
     return df
 
 # 包装st.dataframe，自动应用样式
 def st_df(data, **kwargs):
-    """包装st.dataframe - 简化版，不应用样式"""
+    """Wrap st.dataframe - simplified version, no styling"""
     # 直接返回原始的st.dataframe，不应用任何样式
     return st.dataframe(data, **kwargs)
 
 # 辅助函数
 def format_duration(minutes):
-    """格式化时长"""
+    """Format duration"""
     hours = minutes // 60
     mins = minutes % 60
     if hours > 0:
