@@ -412,19 +412,15 @@ st.markdown("""
 /* 主区域背景和文字 */
 .main .block-container {
     background-color: #ffffff !important;
-    color: #1f1f1f !important;
 }
 
-/* 主区域所有文字元素 - 使用更全面的选择器 */
-.main,
-.main [class*="st"],
-.main * {
+/* 主区域标题 */
+.main h1, .main h2, .main h3, .main h4, .main h5, .main h6 {
     color: #1f1f1f !important;
 }
 
 /* 标题颜色 */
 h1, h2, h3, h4, h5, h6, 
-.main h1, .main h2, .main h3, .main h4, .main h5, .main h6,
 [data-testid="stHeader"] {
     color: #1f1f1f !important;
 }
@@ -585,170 +581,79 @@ label, [data-testid="stLabel"] {
     background-color: #ffffff !important;
 }
 
-/* ==================== 数据表格样式 - 全面覆盖 ==================== */
-/* 表格容器 - 最优先级 */
-[data-testid="stDataFrame"],
-.stDataFrame,
-[data-testid="stVerticalBlock"] > div > div,
-.streamlit-container .element-container {
+/* ==================== 数据表格样式 - 精确控制 ==================== */
+/* Streamlit DataFrame 表格样式 */
+[data-testid="stDataFrame"] {
+    background-color: transparent !important;
+}
+
+/* 表格容器 */
+[data-testid="stDataFrame"] > div,
+[data-testid="stDataFrame"] .dataframe {
     background-color: #ffffff !important;
 }
 
-/* 覆盖所有表格相关元素 */
-table,
-table.dataframe,
-.dataframe,
-.dataframe table,
-[role="table"],
-[class*="dataframe"] {
+/* 表格元素 */
+[data-testid="stDataFrame"] table {
     background-color: #ffffff !important;
-    color: #1f1f1f !important;
-}
-
-/* ========== 表头 - 浅灰色背景 + 黑色字体 ========== */
-thead,
-.dataframe thead,
-table thead,
-thead tr,
-thead th,
-.dataframe thead tr,
-.dataframe thead th,
-table thead tr,
-table thead th,
-th,
-.dataframe th,
-tr:first-child td {
-    background-color: #f0f0f0 !important;
-    color: #1f1f1f !important;
-    font-weight: bold !important;
-    border: 1px solid #dee2e6 !important;
-}
-
-/* Streamlit特定 - 表头行 */
-[data-testid="stDataFrame"] thead,
-[data-testid="stDataFrame"] thead tr,
-[data-testid="stDataFrame"] thead th,
-.stDataFrame thead,
-.stDataFrame thead tr,
-.stDataFrame thead th {
-    background-color: #f0f0f0 !important;
-    color: #1f1f1f !important;
-    font-weight: bold !important;
-}
-
-/* ========== 表体 - 白色背景 + 黑色字体 ========== */
-tbody,
-.dataframe tbody,
-table tbody,
-tbody tr,
-.dataframe tbody tr,
-table tbody tr,
-tbody td,
-.dataframe tbody td,
-table tbody td,
-td,
-.dataframe td,
-tr td {
-    background-color: #ffffff !important;
-    color: #1f1f1f !important;
-    border: 1px solid #dee2e6 !important;
-}
-
-/* Streamlit特定 - 表体行 */
-[data-testid="stDataFrame"] tbody,
-[data-testid="stDataFrame"] tbody tr,
-[data-testid="stDataFrame"] tbody td,
-[data-testid="stDataFrame"] td,
-[data-testid="stDataFrame"] tr,
-.stDataFrame tbody,
-.stDataFrame tbody tr,
-.stDataFrame tbody td,
-.stDataFrame td,
-.stDataFrame tr {
-    background-color: #ffffff !important;
-    color: #1f1f1f !important;
-}
-
-/* ========== 所有表格文字强制黑色 ========== */
-[data-testid="stDataFrame"],
-[data-testid="stDataFrame"] table,
-[data-testid="stDataFrame"] thead,
-[data-testid="stDataFrame"] tbody,
-[data-testid="stDataFrame"] tr,
-[data-testid="stDataFrame"] th,
-[data-testid="stDataFrame"] td,
-[data-testid="stDataFrame"] span,
-[data-testid="stDataFrame"] div,
-.stDataFrame,
-.stDataFrame table,
-.stDataFrame thead,
-.stDataFrame tbody,
-.stDataFrame tr,
-.stDataFrame th,
-.stDataFrame td,
-.stDataFrame span,
-.stDataFrame div,
-table,
-thead,
-tbody,
-tr,
-th,
-td,
-table span,
-table div {
-    color: #1f1f1f !important;
-}
-
-/* ========== 表格边框 ========== */
-table,
-.dataframe table,
-[role="table"] {
     border-collapse: collapse !important;
     border: 1px solid #dee2e6 !important;
 }
 
-th, td {
+/* ========== 表头样式 ========== */
+/* 表头容器 */
+[data-testid="stDataFrame"] thead {
+    background-color: #f0f0f0 !important;
+}
+
+/* 表头行 */
+[data-testid="stDataFrame"] thead tr {
+    background-color: #f0f0f0 !important;
+}
+
+/* 表头单元格 */
+[data-testid="stDataFrame"] thead th {
+    background-color: #f0f0f0 !important;
+    color: #1f1f1f !important;
+    font-weight: bold !important;
     border: 1px solid #dee2e6 !important;
     padding: 8px !important;
+    text-align: left !important;
 }
 
-/* ========== 表格行悬停效果 ========== */
-tr:hover,
-tbody tr:hover,
-.dataframe tbody tr:hover,
-table tbody tr:hover,
-[data-testid="stDataFrame"] tbody tr:hover,
-[data-testid="stDataFrame"] tr:hover {
-    background-color: #f8f9fa !important;
-}
-
-/* ========== 特殊处理：确保表格背景 ========== */
-.element-container,
-.block-container,
-[data-testid="stVerticalBlock"] {
+/* ========== 表体样式 ========== */
+/* 表体容器 */
+[data-testid="stDataFrame"] tbody {
     background-color: #ffffff !important;
 }
 
-/* ========== Metric卡片 ========== */
-[data-testid="stMetric"] {
+/* 表体行 */
+[data-testid="stDataFrame"] tbody tr {
     background-color: #ffffff !important;
     color: #1f1f1f !important;
 }
 
-/* ========== 覆盖Streamlit默认主题样式 ========== */
-[data-testid="stDataFrame"] {
+/* 表体单元格 */
+[data-testid="stDataFrame"] tbody td {
     background-color: #ffffff !important;
+    color: #1f1f1f !important;
+    border: 1px solid #dee2e6 !important;
+    padding: 8px !important;
 }
 
-[data-testid="stDataFrame"] * {
-    background-color: #ffffff !important;
+/* 表格内所有文字 */
+[data-testid="stDataFrame"] table th,
+[data-testid="stDataFrame"] table td {
+    color: #1f1f1f !important;
 }
 
-/* 表头除外 */
-[data-testid="stDataFrame"] thead,
-[data-testid="stDataFrame"] thead *,
-[data-testid="stDataFrame"] th {
-    background-color: #f0f0f0 !important;
+/* 悬停效果 */
+[data-testid="stDataFrame"] tbody tr:hover {
+    background-color: #f8f9fa !important;
+}
+
+[data-testid="stDataFrame"] tbody tr:hover td {
+    background-color: #f8f9fa !important;
 }
 
 /* ==================== 提示信息样式 ==================== */
@@ -781,12 +686,6 @@ table tbody tr:hover,
 [data-testid="stMetricValue"],
 [data-testid="stMetricLabel"],
 [data-testid="stMetricDelta"] {
-    color: #1f1f1f !important;
-}
-
-/* ==================== 其他元素样式 ==================== */
-/* 所有div、span、p等文本元素 */
-div, span, p, li, td, th {
     color: #1f1f1f !important;
 }
 </style>
