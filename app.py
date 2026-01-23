@@ -788,26 +788,147 @@ label, [data-testid="stLabel"] {
 </script>
 
 <style>
-/* 再次覆盖，确保样式生效 */
+<script>
+// JavaScript: 强制设置表格背景色
+(function() {
+    function forceTableStyles() {
+        const dataframes = document.querySelectorAll('[data-testid="stDataFrame"]');
+        dataframes.forEach(df => {
+            // 设置容器背景
+            df.style.backgroundColor = '#ffffff';
+            
+            // 设置所有子div背景
+            const divs = df.querySelectorAll('div');
+            divs.forEach(div => {
+                div.style.backgroundColor = '#ffffff';
+            });
+            
+            // 设置表格背景
+            const tables = df.querySelectorAll('table');
+            tables.forEach(table => {
+                table.style.backgroundColor = '#ffffff';
+                
+                // 表头 - 浅灰色
+                const theads = table.querySelectorAll('thead');
+                theads.forEach(thead => {
+                    thead.style.backgroundColor = '#f0f0f0';
+                    const ths = thead.querySelectorAll('th');
+                    ths.forEach(th => {
+                        th.style.backgroundColor = '#f0f0f0';
+                        th.style.color = '#1f1f1f';
+                    });
+                });
+                
+                // 表体 - 白色
+                const tbodies = table.querySelectorAll('tbody');
+                tbodies.forEach(tbody => {
+                    tbody.style.backgroundColor = '#ffffff';
+                    const trs = tbody.querySelectorAll('tr');
+                    trs.forEach(tr => {
+                        tr.style.backgroundColor = '#ffffff';
+                        const tds = tr.querySelectorAll('td');
+                        tds.forEach(td => {
+                            td.style.backgroundColor = '#ffffff';
+                            td.style.color = '#1f1f1f';
+                        });
+                    });
+                });
+                
+                // 强制覆盖所有元素
+                table.querySelectorAll('*').forEach(el => {
+                    // 如果是表头元素，设置浅灰色
+                    if (el.tagName === 'TH') {
+                        el.style.backgroundColor = '#f0f0f0';
+                        el.style.color = '#1f1f1f';
+                    } else {
+                        el.style.backgroundColor = '#ffffff';
+                        el.style.color = '#1f1f1f';
+                    }
+                });
+            });
+        });
+    }
+    
+    // 页面加载时执行
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', forceTableStyles);
+    } else {
+        forceTableStyles();
+    }
+    
+    // 定时执行，处理动态加载的表格
+    setInterval(forceTableStyles, 1000);
+    
+    // Streamlit rerun时也会执行
+    window.addEventListener('st:rerun', forceTableStyles);
+})();
+</script>
+
+<style>
+/* 再次覆盖，确保样式生效 - 超级强化版 */
 [data-testid="stDataFrame"] {
     background-color: #ffffff !important;
 }
-[data-testid="stDataFrame"] table {
-    background-color: #ffffff !important;
-}
-[data-testid="stDataFrame"] thead {
-    background-color: #f0f0f0 !important;
-}
-[data-testid="stDataFrame"] thead th {
-    background-color: #f0f0f0 !important;
-    color: #1f1f1f !important;
-}
-[data-testid="stDataFrame"] tbody {
-    background-color: #ffffff !important;
-}
+
+/* 所有表格元素 - 表体白色，字体黑色 */
+[data-testid="stDataFrame"] table,
+[data-testid="stDataFrame"] tbody,
+[data-testid="stDataFrame"] tbody tr,
 [data-testid="stDataFrame"] tbody td {
     background-color: #ffffff !important;
     color: #1f1f1f !important;
+}
+
+/* 表头 - 浅灰色，字体黑色 */
+[data-testid="stDataFrame"] thead,
+[data-testid="stDataFrame"] thead tr,
+[data-testid="stDataFrame"] thead th {
+    background-color: #f0f0f0 !important;
+    color: #1f1f1f !important;
+    font-weight: bold !important;
+}
+
+/* 索引列 - 特殊处理 */
+[data-testid="stDataFrame"] th:first-child,
+[data-testid="stDataFrame"] td:first-child,
+[data-testid="stDataFrame"] th:nth-child(1),
+[data-testid="stDataFrame"] td:nth-child(1) {
+    background-color: inherit !important;
+    color: #1f1f1f !important;
+}
+
+/* 表头的第一个元素（可能是索引列表头） */
+[data-testid="stDataFrame"] thead th:first-child {
+    background-color: #f0f0f0 !important;
+    color: #1f1f1f !important;
+}
+
+/* 表体的第一个元素（可能是索引列） */
+[data-testid="stDataFrame"] tbody td:first-child {
+    background-color: #ffffff !important;
+    color: #1f1f1f !important;
+}
+
+/* 强制所有表格元素 */
+[data-testid="stDataFrame"] table th,
+[data-testid="stDataFrame"] table td {
+    color: #1f1f1f !important;
+}
+
+[data-testid="stDataFrame"] table th {
+    background-color: #f0f0f0 !important;
+}
+
+[data-testid="stDataFrame"] table td {
+    background-color: #ffffff !important;
+}
+
+/* 最后的保险措施 - 强制所有元素 */
+[data-testid="stDataFrame"] *:not(th):not(thead *) {
+    background-color: #ffffff !important;
+}
+[data-testid="stDataFrame"] thead * {
+    background-color: #f0f0f0 !important;
 }
 </style>
 """, unsafe_allow_html=True)
