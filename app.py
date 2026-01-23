@@ -515,44 +515,65 @@ label, [data-testid="stLabel"] {
     background-color: #ffffff !important;
 }
 
-/* 下拉选择框 - 增强版选择器，确保底色白色，字体黑色 */
-[data-testid="stSelectbox"] > div > div > div,
-[data-testid="stSelectbox"] > div > div,
-[data-testid="stSelectbox"] > div,
+/* ========== 下拉选择框样式 - 全面覆盖 ========== */
+/* 下拉框容器和所有子元素 */
 [data-testid="stSelectbox"],
-.stSelectbox div,
-.stSelectbox,
-[data-testid="stMultiSelect"] > div > div,
-[data-testid="stMultiSelect"] > div,
+[data-testid="stSelectbox"] div,
+[data-testid="stSelectbox"] span,
+[data-testid="stSelectbox"] button,
 [data-testid="stMultiSelect"],
+[data-testid="stMultiSelect"] div,
+[data-testid="stMultiSelect"] span,
+.stSelectbox,
+.stSelectbox div,
+.stSelectbox span,
 .stMultiSelect,
-select {
+.stMultiSelect div,
+.stMultiSelect span {
     color: #1f1f1f !important;
     background-color: #ffffff !important;
 }
 
-/* 下拉选择框内部的select元素 */
-[data-testid="stSelectbox"] select,
-[data-testid="stMultiSelect"] select,
-.stSelectbox select,
-.stMultiSelect select {
+/* 下拉框内部的输入/显示元素 */
+[data-testid="stSelectbox"] input,
+[data-testid="stMultiSelect"] input,
+[data-testid="stSelectbox"] [class*="control"],
+[data-testid="stMultiSelect"] [class*="control"] {
     color: #1f1f1f !important;
     background-color: #ffffff !important;
 }
 
-/* 下拉选择框选项 */
-[data-testid="stSelectbox"] option,
-[data-testid="stMultiSelect"] option,
-.stSelectbox option,
-.stMultiSelect option,
-option {
+/* react-select 组件样式（Streamlit使用的下拉框组件） */
+.Select,
+.Select__control,
+.Select__value-container,
+.Select__single-value,
+.Select__placeholder,
+.Select__input {
     color: #1f1f1f !important;
     background-color: #ffffff !important;
 }
 
-/* 下拉选择框选中的值显示 */
-[data-testid="stSelectbox"] .stSelectbox .stSelectbox,
-[data-testid="stMultiSelect"] .stMultiSelect {
+/* 下拉选项列表 */
+.Select__menu,
+.Select__menu-list,
+.Select__option,
+.Select__option:hover {
+    background-color: #ffffff !important;
+    color: #1f1f1f !important;
+}
+
+/* 选中状态 */
+.Select__option--is-selected {
+    background-color: #e9ecef !important;
+    color: #1f1f1f !important;
+}
+
+/* Selectbox 的选项菜单 */
+[class*="Select"] option,
+[class*="Select"] [role="option"],
+[role="listbox"],
+[role="option"] {
     color: #1f1f1f !important;
     background-color: #ffffff !important;
 }
@@ -564,104 +585,102 @@ option {
     background-color: #ffffff !important;
 }
 
-/* ==================== 数据表格样式 ==================== */
-/* 数据表格容器 */
+/* ==================== 数据表格样式 - 全面覆盖 ==================== */
+/* 表格容器 */
 [data-testid="stDataFrame"],
-.stDataFrame {
+.stDataFrame,
+[data-testid="stVerticalBlock"] > div > div,
+.streamlit-container .element-container {
     background-color: #ffffff !important;
 }
 
-/* 数据表格table元素 */
-[data-testid="stDataFrame"] table,
-.stDataFrame table {
+/* 所有表格相关元素 */
+table,
+table.dataframe,
+.dataframe,
+.dataframe table {
     background-color: #ffffff !important;
     color: #1f1f1f !important;
 }
 
-/* 数据表格 - 表头浅灰色，字体黑色 */
-[data-testid="stDataFrame"] thead,
-[data-testid="stDataFrame"] thead th,
-[data-testid="stDataFrame"] th,
-.stDataFrame thead,
-.stDataFrame thead th,
-.stDataFrame th,
+/* 表头 - 浅灰色背景 + 黑色字体 */
+thead,
+.dataframe thead,
 table thead,
+thead tr,
+thead th,
+.dataframe thead tr,
+.dataframe thead th,
+table thead tr,
 table thead th,
-table th {
-    background-color: #f0f0f0 !important;
-    color: #1f1f1f !important;
-    font-weight: bold !important;
-}
-
-/* 数据表格 - 表体白色，字体黑色 */
-[data-testid="stDataFrame"] tbody,
-[data-testid="stDataFrame"] tbody tr,
-[data-testid="stDataFrame"] tbody tr td,
-[data-testid="stDataFrame"] td,
-[data-testid="stDataFrame"] tr,
-.stDataFrame tbody,
-.stDataFrame tbody tr,
-.stDataFrame tbody td,
-.stDataFrame td,
-.stDataFrame tr,
-table tbody,
-table tbody tr,
-table td {
-    background-color: #ffffff !important;
-    color: #1f1f1f !important;
-}
-
-/* 数据表格 - 所有元素通用 */
-[data-testid="stDataFrame"], 
-[data-testid="stDataFrame"] table, 
-[data-testid="stDataFrame"] th, 
-[data-testid="stDataFrame"] td,
-[data-testid="stDataFrame"] thead, 
-[data-testid="stDataFrame"] tbody,
-[data-testid="stDataFrame"] tr,
-[data-testid="stDataFrame"] .dataframe,
-.stDataFrame, 
-.stDataFrame table, 
-.stDataFrame th, 
-.stDataFrame td,
-.stDataFrame thead, 
-.stDataFrame tbody,
-.stDataFrame tr,
-.stDataFrame .dataframe {
-    color: #1f1f1f !important;
-    background-color: #ffffff !important;
-}
-
-/* 选中行样式 - 悬停效果 */
-[data-testid="stDataFrame"] tr:hover td,
-.stDataFrame tr:hover td,
-table tr:hover td {
-    background-color: #f8f9fa !important;
-}
-
-/* Pandas DataFrame 特定样式 */
-.dataframe {
-    background-color: #ffffff !important;
-    color: #1f1f1f !important;
-}
-
-.dataframe thead {
-    background-color: #f0f0f0 !important;
-    color: #1f1f1f !important;
-}
-
-.dataframe tbody {
-    background-color: #ffffff !important;
-    color: #1f1f1f !important;
-}
-
+th,
 .dataframe th {
     background-color: #f0f0f0 !important;
     color: #1f1f1f !important;
     font-weight: bold !important;
+    border-bottom: 1px solid #dee2e6 !important;
 }
 
+/* 表体 - 白色背景 + 黑色字体 */
+tbody,
+.dataframe tbody,
+table tbody,
+tbody tr,
+.dataframe tbody tr,
+table tbody tr,
+tbody td,
+.dataframe tbody td,
+table tbody td,
+td,
 .dataframe td {
+    background-color: #ffffff !important;
+    color: #1f1f1f !important;
+}
+
+/* 所有表格文字 */
+[data-testid="stDataFrame"] table,
+[data-testid="stDataFrame"] thead,
+[data-testid="stDataFrame"] tbody,
+[data-testid="stDataFrame"] tr,
+[data-testid="stDataFrame"] th,
+[data-testid="stDataFrame"] td,
+.stDataFrame table,
+.stDataFrame thead,
+.stDataFrame tbody,
+.stDataFrame tr,
+.stDataFrame th,
+.stDataFrame td,
+table,
+thead,
+tbody,
+tr,
+th,
+td {
+    color: #1f1f1f !important;
+}
+
+/* 表格边框 */
+table,
+.dataframe table {
+    border-collapse: collapse !important;
+    border: 1px solid #dee2e6 !important;
+}
+
+th, td {
+    border: 1px solid #dee2e6 !important;
+    padding: 8px !important;
+}
+
+/* 表格行悬停效果 */
+tr:hover,
+tbody tr:hover,
+.dataframe tbody tr:hover,
+table tbody tr:hover {
+    background-color: #f8f9fa !important;
+}
+
+/* 特定：Streamlit的Metric卡片 */
+[data-testid="stMetric"] {
     background-color: #ffffff !important;
     color: #1f1f1f !important;
 }
