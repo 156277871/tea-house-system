@@ -690,12 +690,38 @@ def style_dataframe(df):
             'border-color': '#dee2e6'
         }
     ).set_table_styles([
+        # 表头样式
+        {'selector': 'thead', 'props': [
+            ('background-color', '#f0f0f0')
+        ]},
+        {'selector': 'thead tr', 'props': [
+            ('background-color', '#f0f0f0')
+        ]},
         {'selector': 'thead th', 'props': [
+            ('background-color', '#f0f0f0'),
+            ('color', '#000000'),
+            ('font-weight', 'bold'),
+            ('text-align', 'left')
+        ]},
+        # 表体样式
+        {'selector': 'tbody', 'props': [
+            ('background-color', '#ffffff')
+        ]},
+        {'selector': 'tbody tr', 'props': [
+            ('background-color', '#ffffff')
+        ]},
+        {'selector': 'tbody td', 'props': [
+            ('background-color', '#ffffff'),
+            ('color', '#000000'),
+            ('text-align', 'left')
+        ]},
+        # 索引列样式（如果有）
+        {'selector': 'th.row_heading', 'props': [
             ('background-color', '#f0f0f0'),
             ('color', '#000000'),
             ('font-weight', 'bold')
         ]},
-        {'selector': 'tbody td', 'props': [
+        {'selector': 'td.row_heading', 'props': [
             ('background-color', '#ffffff'),
             ('color', '#000000')
         ]}
